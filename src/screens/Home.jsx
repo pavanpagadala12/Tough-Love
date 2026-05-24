@@ -1,50 +1,62 @@
-import { useEffect } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTimer } from '../hooks/useTimer'
 
 const DURATIONS = [15, 25, 45, 60]
-const BLOCKS = 30
-const COLS = 6
+
+const R    = 88
+const CX   = 100
+const CY   = 100
+const CIRC = 2 * Math.PI * R   // ≈ 553
 
 function getTimerColor(fraction) {
-  if (fraction > 0.5) return '#7C6FF7'
-  if (fraction > 0.2) return '#F59E0B'
-  return '#EF4444'
+  if (fraction > 0.5) return '#7C6FF7'   // purple
+  if (fraction > 0.2) return '#F59E0B'   // amber
+  return '#EF4444'                        // red
 }
 
 function getStatusLabel(fraction, status, duration) {
-  if (status === 'idle')   return `${duration} min session`
+  if (status === 'idle')   return `${duration} min`
   if (status === 'done')   return 'Well done.'
-  if (status === 'paused') return 'Paused — pick back up when ready'
+  if (status === 'paused') return 'Paused'
   if (fraction > 0.7)  return 'Plenty of time'
   if (fraction > 0.4)  return 'Stay focused'
   if (fraction > 0.15) return 'Getting close'
-  return 'The final stretch'
+  return 'Final stretch'
 }
 
-function TimerBlocks({ fraction }) {
-  const color = getTimerColor(fraction)
-  const filledFloat = Math.max(0, Math.min(BLOCKS, fraction * BLOCKS))
+function CircularTimer({ fraction, status }) {
+  const filled = status === 'idle' ? 1 : Math.max(0, Math.min(1, fraction))
+  const dash   = CIRC * filled
+  const gap    = CIRC - dash
+  const color  = getTimerColor(status === 'idle' ? 1 : fraction)
 
   return (
-    <div className="timer-grid">
-      {Array.from({ length: BLOCKS }, (_, i) => {
-        let fill
-        if (i < Math.floor(filledFloat))       fill = 1
-        else if (i === Math.floor(filledFloat)) fill = filledFloat % 1
-        else                                    fill = 0
+    <svg viewBox="0 0 200 200" className="ct-svg" aria-hidden>
+      {/* Glow filter */}
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
 
-        return (
-          <div key={i} className="timer-block">
-            <div
-              className="timer-block-fill"
-              style={{ width: `${fill * 100}%`, background: color }}
-            />
-          </div>
-        )
-      })}
-    </div>
+      {/* Track */}
+      <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+
+      {/* Progress ring */}
+      <circle
+        cx={CX} cy={CY} r={R}
+        fill="none"
+        stroke={color}
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${gap}`}
+        transform={`rotate(-90 ${CX} ${CY})`}
+        filter="url(#glow)"
+        style={{ transition: 'stroke-dasharray 0.6s ease, stroke 1.5s ease' }}
+      />
+    </svg>
   )
 }
 
@@ -63,6 +75,8 @@ export default function Home() {
     }
   }, [status])
 
+  const color = getTimerColor(status === 'idle' ? 1 : fraction)
+
   return (
     <>
       <div className="screen-header">
@@ -71,7 +85,18 @@ export default function Home() {
       </div>
 
       <div className="screen-body">
-        {/* Duration picker — only shown when idle */}
+
+        {/* Circular timer */}
+        <div className="ct-wrapper">
+          <CircularTimer fraction={fraction} status={status} />
+          <div className="ct-center">
+            <p className="ct-label" style={{ color }}>
+              {getStatusLabel(fraction, status, selectedDuration)}
+            </p>
+          </div>
+        </div>
+
+        {/* Duration picker */}
         {(status === 'idle' || status === 'done') && (
           <div className="duration-picker">
             {DURATIONS.map(d => (
@@ -86,40 +111,25 @@ export default function Home() {
           </div>
         )}
 
-        {/* Timer block grid */}
-        <div className="timer-card">
-          <TimerBlocks fraction={status === 'idle' ? 1 : fraction} />
-          <p className="timer-status-label">
-            {getStatusLabel(fraction, status, selectedDuration)}
-          </p>
-        </div>
-
         {/* Controls */}
         <div className="timer-controls">
-          {status === 'idle' && (
-            <button className="btn-primary" onClick={start}>
-              Start session
-            </button>
-          )}
+          {status === 'idle'    && <button className="btn-primary" onClick={start}>Start session</button>}
           {status === 'running' && (
             <>
               <button className="btn-primary" onClick={pause}>Pause</button>
               <button className="btn-ghost" onClick={reset}>Reset</button>
             </>
           )}
-          {status === 'paused' && (
+          {status === 'paused'  && (
             <>
               <button className="btn-primary" onClick={start}>Resume</button>
               <button className="btn-ghost" onClick={reset}>Reset</button>
             </>
           )}
-          {status === 'done' && (
-            <button className="btn-primary" onClick={reset}>New session</button>
-          )}
+          {status === 'done'    && <button className="btn-primary" onClick={reset}>New session</button>}
         </div>
 
         <div className="section-divider" />
-
         <p className="label" style={{ paddingLeft: 2 }}>More tools</p>
 
         <button className="tool-card" onClick={() => navigate('/doomscroll')}>
@@ -145,6 +155,7 @@ export default function Home() {
           </div>
           <span className="tool-card-arrow">→</span>
         </button>
+
       </div>
     </>
   )
