@@ -304,3 +304,299 @@ img, svg              { display: block; }
 }
 .bottom-nav-item.active { color: var(--accent); }
 .bottom-nav-icon        { width: 22px; height: 22px; }
+
+/* ── Section divider ──────────────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+/* ── Visual Time Decay Timer ──────────────────────────────────────── */
+.duration-picker {
+  display: flex;
+  gap: 8px;
+}
+.duration-pill {
+  flex: 1;
+  padding: 10px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.duration-pill.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.timer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.timer-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 4px;
+}
+.timer-block {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: var(--surface-hi);
+  overflow: hidden;
+  position: relative;
+}
+.timer-block-fill {
+  position: absolute;
+  inset: 0;
+  right: auto;
+  transition: width 0.2s linear;
+}
+.timer-status-label {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-2);
+  text-align: center;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.timer-controls .btn-primary { flex: 1; }
+.timer-controls .btn-ghost   { flex-shrink: 0; }
+
+/* ── Tool nav cards ───────────────────────────────────────────────── */
+.tool-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tool-card:active { border-color: var(--accent); }
+.tool-card-text    { flex: 1; }
+.tool-card-title   { font-size: 15px; font-weight: 500; color: var(--text); }
+.tool-card-body    { font-size: 13px; color: var(--text-2); margin-top: 3px; }
+.tool-card-arrow   { font-size: 18px; color: var(--text-2); flex-shrink: 0; }
+
+/* ── Back header (sub-screens) ────────────────────────────────────── */
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 24px 0;
+}
+.back-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.back-button:active { background: var(--surface); }
+.back-header-title  { font-size: 17px; font-weight: 500; color: var(--text); }
+
+/* ── Doomscroll screen ────────────────────────────────────────────── */
+.doomscroll-screen {
+  min-height: 100%;
+  background: linear-gradient(180deg, #0D0D12 0%, #1A0808 100%);
+}
+.doomscroll-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 32px 48px;
+}
+.doom-live-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.doom-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  animation: doom-blink 1s ease-in-out infinite;
+}
+@keyframes doom-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+.doom-live-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #EF4444;
+}
+.doom-time {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 300;
+  letter-spacing: -2px;
+  color: #EF4444;
+  line-height: 1;
+  text-align: center;
+}
+.doom-label {
+  font-size: 15px;
+  color: rgba(239, 68, 68, 0.6);
+  text-align: center;
+  min-height: 24px;
+}
+.doom-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+.doom-btn-start {
+  width: 100%;
+  padding: 18px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--radius);
+  color: #EF4444;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  transition: background 0.15s;
+}
+.doom-btn-start:active { background: rgba(239, 68, 68, 0.25); }
+.doom-btn-stop {
+  width: 100%;
+  padding: 18px;
+  background: #EF4444;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  transition: opacity 0.15s;
+}
+.doom-btn-stop:active { opacity: 0.85; }
+.doom-done-btn {
+  margin-top: 8px;
+  padding: 12px 24px;
+  color: rgba(239, 68, 68, 0.5);
+  font-size: 14px;
+  font-family: var(--font-ui);
+  transition: color 0.15s;
+}
+.doom-done-btn:hover { color: #EF4444; }
+
+/* ── World Clock screen ───────────────────────────────────────────── */
+.wc-screen { min-height: 100%; }
+.wc-list   { display: flex; flex-direction: column; gap: 8px; }
+
+.wc-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.wc-card-left  { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.wc-card-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.wc-avail-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.wc-city       { font-size: 15px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wc-day        { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.wc-time       { font-family: var(--font-display); font-size: 22px; font-weight: 300; color: var(--text); }
+.wc-remove     { font-size: 20px; color: var(--text-2); line-height: 1; padding: 4px; transition: color 0.15s; }
+.wc-remove:hover { color: var(--danger); }
+
+/* ── Overlap bar ──────────────────────────────────────────────────── */
+.overlap-bar {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 2px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.overlap-cell         { border-radius: 1px; transition: background 0.3s; }
+.overlap-cell.current { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 2px; }
+.overlap-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.overlap-legend span  { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
+.legend-dot           { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Add location sheet ───────────────────────────────────────────── */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet {
+  background: var(--surface-hi);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%;
+  max-width: 430px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 16px 20px 40px;
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  margin: 0 auto 20px;
+}
+.sheet-title  { font-size: 17px; font-weight: 600; margin-bottom: 14px; }
+.sheet-list   { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.sheet-city-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 13px 10px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sheet-city-row:active    { background: var(--surface); }
+.sheet-city-name          { font-size: 15px; color: var(--text); }
+.sheet-city-tz            { font-size: 13px; color: var(--text-2); font-family: var(--font-mono); }

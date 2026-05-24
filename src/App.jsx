@@ -5,6 +5,8 @@ import Auth from './screens/Auth'
 import Home from './screens/Home'
 import Goals from './screens/Goals'
 import Settings from './screens/Settings'
+import Doomscroll from './screens/Doomscroll'
+import WorldClock from './screens/WorldClock'
 import BottomNav from './components/BottomNav'
 
 export default function App() {
@@ -26,10 +28,12 @@ export default function App() {
     <BrowserRouter>
       <main className="screen-area">
         <Routes>
-          <Route path="/"         element={<Home />} />
-          <Route path="/goals"    element={<Goals />} />
-          <Route path="/settings" element={<Settings session={session} />} />
-          <Route path="*"         element={<Navigate to="/" replace />} />
+          <Route path="/"            element={<Home />} />
+          <Route path="/doomscroll"  element={<Doomscroll />} />
+          <Route path="/world-clock" element={<WorldClock />} />
+          <Route path="/goals"       element={<Goals />} />
+          <Route path="/settings"    element={<Settings session={session} />} />
+          <Route path="*"            element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <BottomNav />
