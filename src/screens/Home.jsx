@@ -137,6 +137,14 @@ export default function Home() {
           </div>
           <span className="tool-card-arrow">→</span>
         </button>
+
+        <button className="tool-card" onClick={() => navigate('/alarms')}>
+          <div className="tool-card-text">
+            <p className="tool-card-title">Alarms</p>
+            <p className="tool-card-body">Wake smart. Wind down with a fading screen.</p>
+          </div>
+          <span className="tool-card-arrow">→</span>
+        </button>
       </div>
     </>
   )

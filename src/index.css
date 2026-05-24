@@ -600,3 +600,202 @@ img, svg              { display: block; }
 .sheet-city-row:active    { background: var(--surface); }
 .sheet-city-name          { font-size: 15px; color: var(--text); }
 .sheet-city-tz            { font-size: 13px; color: var(--text-2); font-family: var(--font-mono); }
+
+/* ── Toggle switch ────────────────────────────────────────────────── */
+.toggle {
+  width: 46px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-2);
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+.toggle.on                { background: var(--accent-dim); border-color: var(--accent); }
+.toggle.on::after         { transform: translateX(20px); background: var(--accent); }
+
+/* ── Alarm card ───────────────────────────────────────────────────── */
+.alarm-card               { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.alarm-card-header        { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; }
+.alarm-card-header-left   { display: flex; align-items: center; gap: 12px; }
+.alarm-card-icon          { font-size: 22px; line-height: 1; }
+.alarm-card-title         { font-size: 16px; font-weight: 500; color: var(--text); }
+.alarm-card-body          { border-top: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+.alarm-field              { display: flex; flex-direction: column; gap: 8px; }
+.alarm-field-label        { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.alarm-field-hint         { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+/* ── Time input ───────────────────────────────────────────────────── */
+.time-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 36px;
+  font-family: var(--font-display);
+  font-weight: 300;
+  color: var(--text);
+  text-align: center;
+  color-scheme: dark;
+  transition: border-color 0.15s;
+}
+.time-input:focus { border-color: var(--accent); }
+
+/* ── Day picker ───────────────────────────────────────────────────── */
+.day-picker { display: flex; gap: 6px; }
+.day-pill {
+  flex: 1;
+  padding: 9px 4px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.day-pill.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+/* ── Window picker ────────────────────────────────────────────────── */
+.window-picker { display: flex; gap: 8px; }
+.window-pill {
+  flex: 1;
+  padding: 10px 0;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.window-pill.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+/* ── Alarm notice ─────────────────────────────────────────────────── */
+.alarm-notice {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+/* ── Grayscale (Reverse Alarm activates this on screen-area) ─────── */
+.screen-area.grayscale {
+  filter: grayscale(1);
+  transition: filter 120s linear;
+}
+
+/* ── Wake alarm overlay ───────────────────────────────────────────── */
+.wake-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0D0D12;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+}
+.wake-overlay-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.wake-overlay-time {
+  font-family: var(--font-display);
+  font-size: 80px;
+  font-weight: 300;
+  letter-spacing: -3px;
+  color: var(--accent);
+  line-height: 1;
+}
+.wake-overlay-greeting  { font-family: var(--font-display); font-size: 34px; font-weight: 300; color: var(--text); }
+.wake-overlay-sub       { font-size: 15px; color: var(--text-2); }
+.wake-dismiss-btn {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 260px;
+  padding: 18px;
+  background: var(--accent);
+  color: #0D0D12;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  border-radius: var(--radius);
+  transition: opacity 0.15s;
+}
+.wake-dismiss-btn:active { opacity: 0.85; }
+
+/* ── Reverse alarm overlay ────────────────────────────────────────── */
+.reverse-overlay {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 398px;
+  z-index: 300;
+  animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes slide-up {
+  from { transform: translateX(-50%) translateY(120%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+.reverse-overlay-card {
+  background: var(--surface-hi);
+  border: 1px solid rgba(124, 111, 247, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.6);
+}
+.reverse-overlay-icon  { font-size: 32px; }
+.reverse-overlay-title { font-family: var(--font-display); font-size: 28px; font-weight: 300; color: var(--text); }
+.reverse-overlay-body  { font-size: 14px; color: var(--text-2); line-height: 1.65; max-width: 260px; }
+.reverse-dismiss-btn {
+  margin-top: 6px;
+  padding: 14px 0;
+  width: 100%;
+  background: var(--accent-2-dim);
+  border: 1px solid var(--accent-2);
+  border-radius: var(--radius);
+  color: var(--accent-2);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  transition: opacity 0.15s;
+}
+.reverse-dismiss-btn:active { opacity: 0.8; }
+.reverse-dismiss-note  { font-size: 12px; color: var(--text-2); font-style: italic; }
