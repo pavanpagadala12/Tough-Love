@@ -1,0 +1,26 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <circle cx="50" cy="50" r="50" fill="#0D0D12"/>
+
+  <!-- Ring soft glow -->
+  <circle cx="50" cy="50" r="34" fill="none"
+    stroke="rgba(124,111,247,0.18)" stroke-width="14"/>
+
+  <!-- Ring arc 1: 12 o'clock → 7:30 (225°, large-arc, clockwise) -->
+  <path d="M 50 16 A 34 34 0 1 1 26 74"
+    fill="none" stroke="#7C6FF7" stroke-width="5.5" stroke-linecap="round"/>
+
+  <!-- Ring arc 2: 8:30 → 12 o'clock (105°, small-arc, clockwise) -->
+  <path d="M 17 59 A 34 34 0 0 1 50 16"
+    fill="none" stroke="#7C6FF7" stroke-width="5.5" stroke-linecap="round"/>
+
+  <!-- Crack purple halo -->
+  <polyline points="74,26 44,48 56,52 26,74"
+    fill="none" stroke="rgba(124,111,247,0.38)" stroke-width="7"
+    stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Crack white line -->
+  <polyline points="74,26 44,48 56,52 26,74"
+    fill="none" stroke="rgba(248,246,255,0.92)" stroke-width="2.2"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
