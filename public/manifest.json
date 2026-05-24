@@ -1,0 +1,17 @@
+{
+  "name": "Tough Love",
+  "short_name": "Tough Love",
+  "description": "A carrot and stick productivity clock. Beautiful by default, brutal by choice.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D12",
+  "theme_color": "#0D0D12",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
