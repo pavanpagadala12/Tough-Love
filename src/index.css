@@ -1109,4 +1109,286 @@ img, svg              { display: block; }
   font-size: 12px;
   color: var(--text-2);
 }
-.reverse-dismiss-note  { font-size: 12px; color: var(--text-2); font-style: italic; }
+
+/* ── Phase 5: Goals + Carrots ─────────────────────────────────────── */
+
+/* Goal card */
+.goal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.goal-card-inactive {
+  opacity: 0.55;
+}
+
+.goal-card-top  { display: flex; flex-direction: column; gap: 8px; }
+
+.goal-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.goal-stake-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--surface-hi);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.goal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+/* Streak badge */
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.streak-fire  { font-size: 13px; }
+.streak-count { font-size: 13px; font-weight: 700; color: var(--accent); }
+.streak-next  { font-size: 11px; color: var(--text-2); }
+
+/* Goal action buttons */
+.goal-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.goal-btn {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+.goal-btn:active { opacity: 0.7; }
+
+.goal-btn-complete {
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+
+.goal-btn-fail {
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+/* Past goal status */
+.goal-card-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.goal-status-pill {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.goal-status-completed {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success);
+}
+
+.goal-status-failed {
+  background: rgba(239, 68, 68, 0.10);
+  color: var(--danger);
+}
+
+.goal-delete-btn {
+  font-size: 12px;
+  color: var(--text-2);
+  text-decoration: underline;
+  padding: 4px;
+}
+
+/* Time Bank bar */
+.time-bank-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius);
+}
+
+.time-bank-icon  { font-size: 22px; flex-shrink: 0; }
+.time-bank-label { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.time-bank-mins  { font-size: 15px; color: var(--text); font-weight: 600; margin-top: 2px; }
+
+/* Add goal sheet */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet-overlay {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 12px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 4px;
+}
+
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--text);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* Care Package overlay */
+.care-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.care-backdrop.visible { opacity: 1; }
+
+.care-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 360px;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.92);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.care-card.visible { transform: scale(1); }
+
+.care-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.care-particle {
+  position: absolute;
+  top: -10%;
+  animation: care-fall linear both;
+}
+
+@keyframes care-fall {
+  from { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  to   { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+.care-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.care-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.care-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.care-streak {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.care-streak-fire { font-size: 28px; }
+.care-streak-num  { font-family: var(--font-display); font-size: 56px; font-weight: 300; color: var(--accent); line-height: 1; }
+.care-streak-label { font-size: 16px; color: var(--text-2); }
+
+.care-milestone {
+  background: var(--accent-dim);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.care-bank-note {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.care-dismiss {
+  width: 100%;
+  margin-top: 4px;
+}
