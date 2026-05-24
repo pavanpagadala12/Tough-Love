@@ -798,4 +798,315 @@ img, svg              { display: block; }
   transition: opacity 0.15s;
 }
 .reverse-dismiss-btn:active { opacity: 0.8; }
+
+/* ── Phase 4: Onboarding ──────────────────────────────────────────── */
+.ob-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.ob-dots-row {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 0;
+  flex-shrink: 0;
+}
+
+.ob-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ob-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.ob-dot.past    { background: var(--accent-2); opacity: 0.4; }
+.ob-dot.current { background: var(--accent-2); transform: scale(1.5); }
+
+.ob-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: ob-fade-in 0.35s ease both;
+  overflow-y: auto;
+}
+
+@keyframes ob-fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-step {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 24px 48px;
+  min-height: 100%;
+}
+
+/* Back button */
+.ob-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  align-self: flex-start;
+}
+
+/* Welcome step */
+.ob-welcome-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 24px;
+}
+
+.ob-welcome-eyebrow {
+  font-size: 13px;
+  color: var(--text-2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ob-welcome-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--text);
+}
+
+.ob-welcome-tagline {
+  font-size: 16px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-top: 4px;
+}
+
+.ob-welcome-features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.ob-feature-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ob-feature-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+.ob-feature-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.ob-feature-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* Step header */
+.ob-step-header { display: flex; flex-direction: column; gap: 10px; }
+
+.ob-step-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.ob-step-body {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+/* Consent step */
+.ob-consent-list { display: flex; flex-direction: column; gap: 10px; }
+
+.ob-consent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ob-consent-row.on {
+  border-color: var(--accent-2);
+  background: var(--accent-2-dim);
+}
+
+.ob-consent-row-left { display: flex; align-items: flex-start; gap: 14px; flex: 1; }
+.ob-consent-icon     { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.ob-consent-text     { flex: 1; }
+
+.ob-consent-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.ob-consent-body {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.ob-consent-note {
+  font-size: 12px;
+  color: var(--text-2);
+  text-align: center;
+}
+
+/* Permissions step */
+.ob-permission-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.ob-permission-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.ob-permission-check {
+  font-size: 16px;
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+.ob-granted {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid var(--success);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success);
+}
+
+/* Safety net step */
+.ob-safety-list { display: flex; flex-direction: column; gap: 10px; }
+
+.ob-safety-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.ob-safety-icon  { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+.ob-safety-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.ob-safety-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* First win step */
+.ob-field { display: flex; flex-direction: column; gap: 10px; }
+
+.ob-pyramid-hint {
+  font-size: 12px;
+  color: var(--text-2);
+  text-align: center;
+}
+
+/* Stake pyramid */
+.stake-pyramid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.pyramid-level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pyramid-level.selected {
+  background: var(--accent-2-dim);
+  border-color: var(--accent-2);
+}
+
+.pyramid-level.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pyramid-icon   { font-size: 20px; flex-shrink: 0; }
+.pyramid-text   { flex: 1; }
+
+.pyramid-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.pyramid-sub {
+  font-size: 12px;
+  color: var(--text-2);
+}
 .reverse-dismiss-note  { font-size: 12px; color: var(--text-2); font-style: italic; }
