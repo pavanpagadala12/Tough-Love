@@ -237,8 +237,25 @@ function StreakBadge({ count }) {
 
 // ── Goal card ────────────────────────────────────────────────────────
 function GoalCard({ goal, streak, onComplete, onFail, onDelete }) {
+  const [busy,       setBusy]       = useState(false)
+  const [todayState, setTodayState] = useState(null) // 'done' | 'failed' | null
+
   const stakeInfo = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
   const isActive  = goal.status === 'active'
+
+  async function handleComplete() {
+    setBusy(true)
+    await onComplete(goal, streak)
+    setTodayState('done')
+    setBusy(false)
+  }
+
+  async function handleFail() {
+    setBusy(true)
+    await onFail(goal, streak)
+    setTodayState('failed')
+    setBusy(false)
+  }
 
   return (
     <div className={`goal-card${!isActive ? ' goal-card-inactive' : ''}`}>
@@ -250,21 +267,33 @@ function GoalCard({ goal, streak, onComplete, onFail, onDelete }) {
         <p className="goal-title">{goal.title}</p>
         {isActive && (goal.stick_letter || goal.stick_reality_check || goal.stick_witness) && (
           <div className="goal-sticks">
-            {goal.stick_letter       && <span className="goal-stick-pill">✉️ Letter</span>}
+            {goal.stick_letter        && <span className="goal-stick-pill">✉️ Letter</span>}
             {goal.stick_reality_check && <span className="goal-stick-pill">📋 Reality Check</span>}
-            {goal.stick_witness      && <span className="goal-stick-pill">👁 Witness</span>}
+            {goal.stick_witness       && <span className="goal-stick-pill">👁 Witness</span>}
           </div>
         )}
       </div>
 
-      {isActive && (
+      {isActive && todayState === null && (
         <div className="goal-card-actions">
-          <button className="goal-btn goal-btn-complete" onClick={() => onComplete(goal, streak)}>
-            ✓ Done today
+          <button className="goal-btn goal-btn-complete" onClick={handleComplete} disabled={busy}>
+            {busy ? '…' : '✓ Done today'}
           </button>
-          <button className="goal-btn goal-btn-fail" onClick={() => onFail(goal, streak)}>
-            ✗ Failed
+          <button className="goal-btn goal-btn-fail" onClick={handleFail} disabled={busy}>
+            {busy ? '…' : '✗ Failed'}
           </button>
+        </div>
+      )}
+
+      {isActive && todayState === 'done' && (
+        <div className="goal-today-feedback goal-today-done">
+          ✓ Logged — streak extended. See you tomorrow.
+        </div>
+      )}
+
+      {isActive && todayState === 'failed' && (
+        <div className="goal-today-feedback goal-today-failed">
+          Logged. Streak reset. You can still try again tomorrow.
         </div>
       )}
 
@@ -398,25 +427,29 @@ export default function Goals() {
     const insuranceUsed = streak?.insurance_used_month
 
     if (curStreak >= 7 && insuranceUsed !== curMonth) {
-      await supabase.from('streaks').upsert({
+      const { error: e1 } = await supabase.from('streaks').upsert({
         user_id: userId, goal_id: goal.id,
         current_streak: curStreak, longest_streak: streak?.longest_streak ?? curStreak,
         last_completed_at: now, insurance_used_month: curMonth,
       }, { onConflict: 'user_id,goal_id' })
+      if (e1) console.error('streaks upsert:', e1)
 
-      await supabase.from('goal_sessions').insert({
+      const { error: e2 } = await supabase.from('goal_sessions').insert({
         user_id: userId, goal_id: goal.id, outcome: 'failed', streak_insurance_used: true,
       })
+      if (e2) console.error('goal_sessions insert:', e2)
+
       await loadData(userId)
       alert(`Streak insurance used! Your ${curStreak}-day streak is protected. One free pass per month.`)
       return
     }
 
-    await supabase.from('streaks').upsert({
+    const { error: e3 } = await supabase.from('streaks').upsert({
       user_id: userId, goal_id: goal.id,
       current_streak: 0, longest_streak: streak?.longest_streak ?? 0,
       last_completed_at: now,
     }, { onConflict: 'user_id,goal_id' })
+    if (e3) console.error('streaks upsert:', e3)
 
     await supabase.from('goal_sessions').insert({
       user_id: userId, goal_id: goal.id, outcome: 'failed',

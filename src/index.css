@@ -1228,6 +1228,25 @@ img, svg              { display: block; }
   padding: 4px;
 }
 
+.goal-today-feedback {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.goal-today-done {
+  background: rgba(16, 185, 129, 0.10);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.goal-today-failed {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 /* Time Bank bar */
 .time-bank-bar {
   display: flex;
