@@ -45,7 +45,8 @@ function MainApp({ session }) {
       .select('onboarding_completed')
       .eq('id', session.user.id)
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error('profile fetch:', error)
         setProfile(data ?? { onboarding_completed: false })
         setProfileLoaded(true)
       })
