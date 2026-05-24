@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../supabase'
 import CarePackage from '../components/CarePackage'
 import RealityCheck from '../components/RealityCheck'
+import StreakInsuranceSheet from '../components/StreakInsuranceSheet'
 
 // ── Stake Pyramid ────────────────────────────────────────────────────
 const STAKE_LEVELS = [
@@ -337,6 +338,7 @@ export default function Goals() {
   const [letterReveal, setLetterReveal] = useState(null)  // { content, goalTitle }
   const [realityGoal,  setRealityGoal]  = useState(null)  // goal that failed (for Reality Check)
   const [timeBankMin,  setTimeBankMin]  = useState(0)
+  const [insuranceStreak, setInsuranceStreak] = useState(null)  // streak count when insurance fires
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -440,7 +442,7 @@ export default function Goals() {
       if (e2) console.error('goal_sessions insert:', e2)
 
       await loadData(userId)
-      alert(`Streak insurance used! Your ${curStreak}-day streak is protected. One free pass per month.`)
+      setInsuranceStreak(curStreak)
       return
     }
 
@@ -600,6 +602,13 @@ export default function Goals() {
           goal={realityGoal}
           lostStreak={realityGoal.lostStreak}
           onDismiss={() => setRealityGoal(null)}
+        />
+      )}
+
+      {insuranceStreak !== null && (
+        <StreakInsuranceSheet
+          streakCount={insuranceStreak}
+          onDismiss={() => setInsuranceStreak(null)}
         />
       )}
     </>

@@ -13,6 +13,7 @@ import BottomNav from './components/BottomNav'
 import GuestGate from './components/GuestGate'
 import LoginSheet from './components/LoginSheet'
 import { WakeAlarmOverlay, ReverseAlarmOverlay } from './components/AlarmOverlays'
+import InstallPrompt from './components/InstallPrompt'
 
 export default function App() {
   const [session, setSession] = useState(undefined)
@@ -120,6 +121,7 @@ function MainApp({ session }) {
       {wakeActive    && <WakeAlarmOverlay    onDismiss={() => setWakeActive(false)} />}
       {reverseActive && <ReverseAlarmOverlay onDismiss={() => setReverseActive(false)} />}
       {showLogin     && <LoginSheet onClose={() => setShowLogin(false)} />}
+      <InstallPrompt />
     </BrowserRouter>
   )
 }
