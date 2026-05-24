@@ -1,10 +1,6 @@
-const CACHE = 'tough-love-v1'
-const PRECACHE = ['/', '/index.html']
+const CACHE = 'tough-love-v2'
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)))
-  self.skipWaiting()
-})
+self.addEventListener('install', () => self.skipWaiting())
 
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -17,13 +13,31 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
-  if (e.request.url.includes('supabase.co')) return
-  if (e.request.url.includes('fonts.googleapis.com')) return
-  if (e.request.url.includes('fonts.gstatic.com')) return
 
-  e.respondWith(
-    caches.match(e.request).then(cached => cached ?? fetch(e.request))
-  )
+  const url = new URL(e.request.url)
+
+  // Skip cross-origin requests (Supabase, Google Fonts, etc.)
+  if (url.origin !== location.origin) return
+
+  // Hashed assets (/assets/xxx-[hash].js|css) — cache first, they're immutable
+  if (url.pathname.startsWith('/assets/')) {
+    e.respondWith(
+      caches.open(CACHE).then(cache =>
+        cache.match(e.request).then(cached => {
+          if (cached) return cached
+          return fetch(e.request).then(res => {
+            cache.put(e.request, res.clone())
+            return res
+          })
+        })
+      )
+    )
+    return
+  }
+
+  // index.html and all navigation — always network first so new deploys are picked up immediately
+  // Fall back to network without caching HTML
+  e.respondWith(fetch(e.request).catch(() => caches.match('/assets/')))
 })
 
 self.addEventListener('push', e => {
