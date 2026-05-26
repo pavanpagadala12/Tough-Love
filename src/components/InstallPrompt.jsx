@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
-const DISMISSED_KEY = 'tl_install_dismissed'
+const DISMISSED_KEY = 'tl_install_dismissed_ts'
+const COOLDOWN_MS   = 3 * 24 * 60 * 60 * 1000 // 3 days
 
 function isIos() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent)
@@ -13,41 +14,58 @@ function isStandalone() {
   )
 }
 
+function isDismissed() {
+  const ts = localStorage.getItem(DISMISSED_KEY)
+  if (!ts) return false
+  return Date.now() - Number(ts) < COOLDOWN_MS
+}
+
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [showIos,        setShowIos]        = useState(false)
   const [visible,        setVisible]        = useState(false)
 
+  // Listen for beforeinstallprompt for the entire session.
+  // The browser can re-fire it after the user rejects the native prompt,
+  // so we keep the listener alive rather than removing it on first fire.
   useEffect(() => {
     if (isStandalone()) return
-    if (sessionStorage.getItem(DISMISSED_KEY)) return
-
-    if (isIos()) {
-      setShowIos(true)
-      setVisible(true)
-      return
-    }
 
     function handler(e) {
       e.preventDefault()
       setDeferredPrompt(e)
-      setVisible(true)
+      if (!isDismissed()) setVisible(true)
     }
     window.addEventListener('beforeinstallprompt', handler)
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
+  // iOS — show once on mount if not dismissed
+  useEffect(() => {
+    if (isStandalone()) return
+    if (isIos() && !isDismissed()) {
+      setShowIos(true)
+      setVisible(true)
+    }
+  }, [])
+
   function dismiss() {
-    sessionStorage.setItem(DISMISSED_KEY, '1')
+    // Store a timestamp; prompt returns after 3 days so accidental dismissal isn't permanent
+    localStorage.setItem(DISMISSED_KEY, String(Date.now()))
     setVisible(false)
   }
 
   async function install() {
     if (!deferredPrompt) return
     deferredPrompt.prompt()
-    await deferredPrompt.userChoice
+    const { outcome } = await deferredPrompt.userChoice
     setDeferredPrompt(null)
-    setVisible(false)
+    if (outcome === 'accepted') {
+      setVisible(false)
+    }
+    // If the user cancelled the native dialog, we leave the banner open.
+    // When the browser re-fires beforeinstallprompt, the handler above will
+    // refresh deferredPrompt so they can try the install again.
   }
 
   if (!visible) return null

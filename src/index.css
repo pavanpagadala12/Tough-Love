@@ -63,7 +63,7 @@ img, svg              { display: block; }
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--nav-h);
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom));
 }
 
 /* ── Desktop overrides (768px+) ───────────────────────────────────── */
@@ -118,8 +118,8 @@ img, svg              { display: block; }
     align-items: start;
   }
 
-  .home-col-left  { display: flex; flex-direction: column; gap: 14px; }
-  .home-col-right { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
+  .home-col-left  { gap: 14px; }
+  .home-col-right { gap: 14px; margin-top: 0; padding-top: 8px; }
 
   /* World clock 2-col on desktop */
   .wc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -244,7 +244,7 @@ img, svg              { display: block; }
 
 /* ── Screen header ────────────────────────────────────────────────── */
 .screen-header {
-  padding: 60px 24px 16px;
+  padding: max(60px, calc(var(--safe-top) + 20px)) 24px 16px;
 }
 .screen-header .label { margin-bottom: 10px; display: block; }
 .screen-header-title  {
@@ -474,6 +474,20 @@ img, svg              { display: block; }
 }
 
 /* ── Circular Timer ───────────────────────────────────────────────── */
+/* ── Home screen layout (mobile base) ───────────────────────────── */
+.home-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
 .ct-wrapper {
   position: relative;
   width: 260px;
@@ -565,7 +579,7 @@ img, svg              { display: block; }
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 60px 24px 0;
+  padding: max(60px, calc(var(--safe-top) + 20px)) 24px 0;
 }
 .back-button {
   width: 36px;
