@@ -732,8 +732,8 @@ img, svg              { display: block; }
 .overlap-legend span  { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
 .legend-dot           { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-/* ── Add location sheet ───────────────────────────────────────────── */
-.sheet-overlay {
+/* ── Add location sheet (WorldClock) ─────────────────────────────── */
+.wc-sheet-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
@@ -1437,14 +1437,17 @@ img, svg              { display: block; }
 .time-bank-label { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 .time-bank-mins  { font-size: 15px; color: var(--text); font-weight: 600; margin-top: 2px; }
 
-/* Add goal sheet */
+/* Add goal sheet / login sheet */
 .sheet-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
   align-items: flex-end;
+  justify-content: center;
 }
 
 .sheet-overlay {
@@ -1454,11 +1457,11 @@ img, svg              { display: block; }
   width: 100%;
   max-width: 430px;
   margin: 0 auto;
-  padding: 12px 24px 40px;
+  padding: 12px 24px max(40px, calc(var(--safe-bottom) + 16px));
   display: flex;
   flex-direction: column;
   gap: 20px;
-  animation: slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
 }
 
 .sheet-handle {

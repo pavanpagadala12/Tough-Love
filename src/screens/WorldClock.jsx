@@ -191,7 +191,7 @@ export default function WorldClock() {
 
       {/* Add location sheet */}
       {showSheet && (
-        <div className="sheet-overlay" onClick={() => setShowSheet(false)}>
+        <div className="wc-sheet-backdrop" onClick={() => setShowSheet(false)}>
           <div className="sheet" onClick={e => e.stopPropagation()}>
             <div className="sheet-handle" />
             <p className="sheet-title">Add a location</p>
