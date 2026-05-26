@@ -11,14 +11,20 @@ import WorldClock from './screens/WorldClock'
 import Alarms from './screens/Alarms'
 import Onboarding from './screens/Onboarding'
 import BottomNav from './components/BottomNav'
+import Sidebar from './components/Sidebar'
 import LoginSheet from './components/LoginSheet'
 import { WakeAlarmOverlay, ReverseAlarmOverlay } from './components/AlarmOverlays'
 import InstallPrompt from './components/InstallPrompt'
 
-function ConditionalBottomNav() {
+function ConditionalNav() {
   const { pathname } = useLocation()
   if (pathname === '/') return null
-  return <BottomNav />
+  return (
+    <>
+      <Sidebar />
+      <BottomNav />
+    </>
+  )
 }
 
 export default function App() {
@@ -112,7 +118,7 @@ function MainApp({ session }) {
               <Route path="*"            element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <ConditionalBottomNav />
+          <ConditionalNav />
         </>
       )}
 

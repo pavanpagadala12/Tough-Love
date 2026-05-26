@@ -116,6 +116,7 @@ export default function Alarms() {
       </div>
 
       <div className="screen-body" style={{ paddingTop: 20 }}>
+        <div className="alarms-desktop">
 
         {/* Wake Alarm */}
         <AlarmCard title="Wake Alarm" icon="🌅" alarm={wake} onUpdate={updateWake}>
@@ -175,6 +176,7 @@ export default function Alarms() {
           </p>
         </div>
 
+        </div>{/* end alarms-desktop */}
       </div>
     </>
   )

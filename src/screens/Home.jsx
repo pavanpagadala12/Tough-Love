@@ -85,77 +85,81 @@ export default function Home() {
       </div>
 
       <div className="screen-body">
+        <div className="home-desktop">
 
-        {/* Circular timer */}
-        <div className="ct-wrapper">
-          <CircularTimer fraction={fraction} status={status} />
-          <div className="ct-center">
-            <p className="ct-label" style={{ color }}>
-              {getStatusLabel(fraction, status, selectedDuration)}
-            </p>
+          {/* Left column — timer */}
+          <div className="home-col-left">
+            <div className="ct-wrapper">
+              <CircularTimer fraction={fraction} status={status} />
+              <div className="ct-center">
+                <p className="ct-label" style={{ color }}>
+                  {getStatusLabel(fraction, status, selectedDuration)}
+                </p>
+              </div>
+            </div>
+
+            {(status === 'idle' || status === 'done') && (
+              <div className="duration-picker">
+                {DURATIONS.map(d => (
+                  <button
+                    key={d}
+                    className={`duration-pill${selectedDuration === d ? ' active' : ''}`}
+                    onClick={() => { setSelectedDuration(d); reset() }}
+                  >
+                    {d}m
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="timer-controls">
+              {status === 'idle'    && <button className="btn-primary" onClick={start}>Start session</button>}
+              {status === 'running' && (
+                <>
+                  <button className="btn-primary" onClick={pause}>Pause</button>
+                  <button className="btn-ghost" onClick={reset}>Reset</button>
+                </>
+              )}
+              {status === 'paused'  && (
+                <>
+                  <button className="btn-primary" onClick={start}>Resume</button>
+                  <button className="btn-ghost" onClick={reset}>Reset</button>
+                </>
+              )}
+              {status === 'done'    && <button className="btn-primary" onClick={reset}>New session</button>}
+            </div>
           </div>
+
+          {/* Right column — tools */}
+          <div className="home-col-right">
+            <p className="label" style={{ paddingLeft: 2 }}>More tools</p>
+
+            <button className="tool-card" onClick={() => navigate('/doomscroll')}>
+              <div className="tool-card-text">
+                <p className="tool-card-title">Doomscroll Stopwatch</p>
+                <p className="tool-card-body">Time your next scroll session honestly.</p>
+              </div>
+              <span className="tool-card-arrow">→</span>
+            </button>
+
+            <button className="tool-card" onClick={() => navigate('/world-clock')}>
+              <div className="tool-card-text">
+                <p className="tool-card-title">World Clock</p>
+                <p className="tool-card-body">See who's awake, in the zone, or asleep.</p>
+              </div>
+              <span className="tool-card-arrow">→</span>
+            </button>
+
+            <button className="tool-card" onClick={() => navigate('/alarms')}>
+              <div className="tool-card-text">
+                <p className="tool-card-title">Alarms</p>
+                <p className="tool-card-body">Wake smart. Wind down with a fading screen.</p>
+              </div>
+              <span className="tool-card-arrow">→</span>
+            </button>
+          </div>
+
         </div>
-
-        {/* Duration picker */}
-        {(status === 'idle' || status === 'done') && (
-          <div className="duration-picker">
-            {DURATIONS.map(d => (
-              <button
-                key={d}
-                className={`duration-pill${selectedDuration === d ? ' active' : ''}`}
-                onClick={() => { setSelectedDuration(d); reset() }}
-              >
-                {d}m
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Controls */}
-        <div className="timer-controls">
-          {status === 'idle'    && <button className="btn-primary" onClick={start}>Start session</button>}
-          {status === 'running' && (
-            <>
-              <button className="btn-primary" onClick={pause}>Pause</button>
-              <button className="btn-ghost" onClick={reset}>Reset</button>
-            </>
-          )}
-          {status === 'paused'  && (
-            <>
-              <button className="btn-primary" onClick={start}>Resume</button>
-              <button className="btn-ghost" onClick={reset}>Reset</button>
-            </>
-          )}
-          {status === 'done'    && <button className="btn-primary" onClick={reset}>New session</button>}
-        </div>
-
-        <div className="section-divider" />
-        <p className="label" style={{ paddingLeft: 2 }}>More tools</p>
-
-        <button className="tool-card" onClick={() => navigate('/doomscroll')}>
-          <div className="tool-card-text">
-            <p className="tool-card-title">Doomscroll Stopwatch</p>
-            <p className="tool-card-body">Time your next scroll session honestly.</p>
-          </div>
-          <span className="tool-card-arrow">→</span>
-        </button>
-
-        <button className="tool-card" onClick={() => navigate('/world-clock')}>
-          <div className="tool-card-text">
-            <p className="tool-card-title">World Clock</p>
-            <p className="tool-card-body">See who's awake, in the zone, or asleep.</p>
-          </div>
-          <span className="tool-card-arrow">→</span>
-        </button>
-
-        <button className="tool-card" onClick={() => navigate('/alarms')}>
-          <div className="tool-card-text">
-            <p className="tool-card-title">Alarms</p>
-            <p className="tool-card-body">Wake smart. Wind down with a fading screen.</p>
-          </div>
-          <span className="tool-card-arrow">→</span>
-        </button>
-
       </div>
     </>
   )

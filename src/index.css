@@ -66,6 +66,71 @@ img, svg              { display: block; }
   padding-bottom: var(--nav-h);
 }
 
+/* ── Desktop overrides (768px+) ───────────────────────────────────── */
+@media (min-width: 768px) {
+  html, body { overflow: auto; }
+
+  #root {
+    max-width: 100%;
+    flex-direction: row;
+    overflow: visible;
+    height: 100vh;
+  }
+
+  .screen-area {
+    padding-bottom: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Bottom nav hidden on desktop — sidebar takes over */
+  .bottom-nav { display: none !important; }
+
+  /* Content width cap and centering for all screens */
+  .screen-header {
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 48px;
+  }
+
+  .screen-body {
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .back-header {
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 40px;
+  }
+
+  /* Circular timer — bigger on desktop */
+  .ct-wrapper { width: 320px; height: 320px; }
+
+  /* Home screen — 2-col grid on desktop */
+  .home-desktop {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .home-col-left  { display: flex; flex-direction: column; gap: 14px; }
+  .home-col-right { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
+
+  /* World clock 2-col on desktop */
+  .wc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Settings rows slightly wider */
+  .settings-group { max-width: 600px; }
+
+  /* Alarm cards 2-col on desktop */
+  .alarms-desktop { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+}
+
 /* ── Splash (loading state) ───────────────────────────────────────── */
 .splash {
   position: fixed;
@@ -321,6 +386,85 @@ img, svg              { display: block; }
 }
 .bottom-nav-icon { width: 22px; height: 22px; transition: transform 0.2s; }
 .bottom-nav-item.active .bottom-nav-icon { transform: scale(1.1); }
+
+/* ── Sidebar (desktop only) ───────────────────────────────────────── */
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 14px 24px;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    margin-bottom: 36px;
+  }
+
+  .sidebar-brand-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+  }
+
+  .sidebar-item:hover { background: var(--surface-hi); color: var(--text); }
+
+  .sidebar-item.active {
+    background: var(--accent-2-dim);
+    color: var(--accent-2);
+  }
+
+  .sidebar-item-icon { flex-shrink: 0; display: flex; }
+  .sidebar-item-label { flex: 1; }
+
+  .sidebar-footer {
+    padding: 12px 10px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+  }
+
+  .sidebar-footer-text {
+    font-size: 11px;
+    color: rgba(126, 125, 143, 0.5);
+  }
+}
 
 /* ── Section divider ──────────────────────────────────────────────── */
 .section-divider {
@@ -2227,6 +2371,50 @@ img, svg              { display: block; }
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* ── Landing page desktop overrides ──────────────────────────────── */
+@media (min-width: 640px) {
+  /* Landing wraps in the full-width screen-area on desktop */
+  .lp2 { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+  .lp2-header { padding: 16px 0; position: sticky; }
+
+  .lp2-headline { font-size: 96px; letter-spacing: -4px; }
+
+  .lp2-hero { padding: 80px 0 72px; }
+
+  .lp2-hero-sub { font-size: 17px; max-width: 400px; }
+
+  /* 3-column bento on desktop */
+  .lp2-bento { grid-template-columns: 1fr 1fr 1fr; }
+  .bento-wide { grid-column: span 3; }
+
+  /* 4-column feature grid on desktop */
+  .lp2-grid-2 { grid-template-columns: repeat(4, 1fr); }
+
+  .lp2-section { padding: 64px 0; }
+
+  .lp2-section-title { font-size: 40px; }
+
+  .lp2-mid-cta { padding: 72px 0; }
+  .lp2-mid-cta-title { font-size: 52px; }
+
+  .lp2-footer-cta { padding: 80px 0 100px; }
+  .lp2-footer-title { font-size: 56px; }
+
+  /* Quote wider */
+  .lp2-quote { max-width: 640px; margin: 0 auto; }
+  .lp2-quote-text { font-size: 16px; }
+}
+
+@media (min-width: 900px) {
+  /* Hero goes side-by-side: text left, stats right */
+  .lp2-hero { text-align: left; align-items: flex-start; }
+  .lp2-hero-content { align-items: flex-start; }
+  .lp2-eyebrow-pill { margin-bottom: 24px; }
+  .lp2-stats { justify-content: flex-start; }
+  .lp2-hero-sub { text-align: left; }
 }
 
 /* ── Streak Insurance Sheet ───────────────────────────────────────── */
