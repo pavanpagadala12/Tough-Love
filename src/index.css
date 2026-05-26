@@ -2548,6 +2548,184 @@ img, svg              { display: block; }
   font-weight: 500;
 }
 
+/* ── Daily Rhythm ─────────────────────────────────────────────────── */
+.rhythm-card { gap: 12px; }
+
+.rhythm-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rhythm-setup-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-2);
+  padding: 4px 10px;
+  border: 1px solid var(--accent-2-dim);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.rhythm-setup-btn:active { background: var(--accent-2-dim); }
+
+.rhythm-anchor {
+  font-size: 12px;
+  color: var(--text-2);
+  margin: 0;
+}
+.rhythm-anchor-type { text-transform: capitalize; }
+
+/* Category pills */
+.rhythm-cats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rhythm-cat {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  opacity: 0.45;
+  transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+}
+.rhythm-cat.active                { opacity: 1; }
+.rhythm-cat--morning.active       { border-color: var(--accent);  color: var(--accent);  }
+.rhythm-cat--focus.active         { border-color: var(--accent-2); color: var(--accent-2); }
+.rhythm-cat--afternoon.active     { border-color: var(--success);  color: var(--success);  }
+.rhythm-cat--sleep.active         { border-color: #818CF8; color: #818CF8; }
+
+/* Timeline */
+.rhythm-timeline {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+}
+
+.rhythm-event {
+  display: grid;
+  grid-template-columns: 52px 18px 1fr;
+  column-gap: 10px;
+  padding-top: var(--gap, 4px);
+  align-items: start;
+}
+
+.rhythm-event-time {
+  font-size: 11px;
+  color: var(--text-2);
+  text-align: right;
+  padding-top: 1px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.rhythm-event-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rhythm-event-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.rhythm-event-line {
+  width: 2px;
+  flex: 1;
+  min-height: 14px;
+  background: var(--border);
+  margin-top: 3px;
+}
+
+.rhythm-event-body { padding-bottom: 2px; }
+
+.rhythm-event-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.rhythm-event-desc {
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+/* Category dot colours */
+.rhythm-event--morning  .rhythm-event-dot { background: var(--accent); }
+.rhythm-event--focus    .rhythm-event-dot { background: var(--accent-2); }
+.rhythm-event--afternoon .rhythm-event-dot { background: var(--success); }
+.rhythm-event--sleep    .rhythm-event-dot { background: #818CF8; }
+
+/* Sleep-end hollow dot */
+.rhythm-dot--sleep-end {
+  background: none !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.rhythm-sleep-end-label { opacity: 0.4; font-weight: 400; }
+
+/* Past state — dimmed, no description */
+.rhythm-event--past .rhythm-event-dot   { opacity: 0.28; }
+.rhythm-event--past .rhythm-event-time  { opacity: 0.38; }
+.rhythm-event--past .rhythm-event-label { color: var(--text-2); font-weight: 400; }
+
+/* Disabled category state */
+.rhythm-event--off .rhythm-event-dot    { background: var(--border) !important; }
+.rhythm-event--off .rhythm-event-label  { opacity: 0.3; }
+.rhythm-event--off .rhythm-event-time   { opacity: 0.3; }
+
+/* Now indicator */
+.rhythm-now {
+  display: grid;
+  grid-template-columns: 52px 18px 1fr;
+  column-gap: 10px;
+  align-items: center;
+  padding: 7px 0;
+}
+
+.rhythm-now-time {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-2);
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.rhythm-now-spine {
+  display: flex;
+  justify-content: center;
+}
+
+.rhythm-now-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 3px var(--accent-2-dim), 0 0 10px rgba(124, 111, 247, 0.45);
+}
+
+.rhythm-now-rule {
+  height: 1px;
+  background: linear-gradient(to right, var(--accent-2) 0%, transparent 75%);
+  opacity: 0.45;
+}
+
+/* Setup sheet done button */
+.rhythm-setup-done {
+  width: 100%;
+  text-align: center;
+}
+
 .si-sheet .btn-primary { margin-top: 8px; }
 
 /* ── PWA Install Banner ───────────────────────────────────────────── */

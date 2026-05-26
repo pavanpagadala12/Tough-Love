@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DailyRhythm from '../components/DailyRhythm'
 
 const WAKE_KEY    = 'tl_wake_alarm'
 const REVERSE_KEY = 'tl_reverse_alarm'
@@ -168,6 +169,9 @@ export default function Alarms() {
             </p>
           </div>
         </AlarmCard>
+
+        {/* Daily Rhythm */}
+        <DailyRhythm />
 
         <div className="alarm-notice">
           <p>
