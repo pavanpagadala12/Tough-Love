@@ -1,10 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { useStopwatch } from '../hooks/useStopwatch'
 import { formatStopwatch } from '../utils/time'
 
-export default function Doomscroll() {
+export default function Doomscroll({ elapsed, running, start, stop, reset }) {
   const navigate = useNavigate()
-  const { elapsed, running, start, stop, reset } = useStopwatch()
 
   const minutes = Math.floor(elapsed / 60)
   const honestLabel =

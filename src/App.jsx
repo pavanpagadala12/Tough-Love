@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './supabase'
 import { useAlarmChecker } from './hooks/useAlarmChecker'
+import { useStopwatch } from './hooks/useStopwatch'
 import Landing from './screens/Landing'
 import Home from './screens/Home'
 import Goals from './screens/Goals'
@@ -13,6 +14,7 @@ import Onboarding from './screens/Onboarding'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
 import LoginSheet from './components/LoginSheet'
+import DoomscrollFloat from './components/DoomscrollFloat'
 import { WakeAlarmOverlay, ReverseAlarmOverlay } from './components/AlarmOverlays'
 import InstallPrompt from './components/InstallPrompt'
 
@@ -49,6 +51,7 @@ function MainApp({ session }) {
   const [wakeActive,    setWakeActive]    = useState(false)
   const [reverseActive, setReverseActive] = useState(false)
   const [showLogin,     setShowLogin]     = useState(false)
+  const doom = useStopwatch()
 
   useEffect(() => {
     if (!session) { setProfile(null); setProfileLoaded(true); return }
@@ -110,7 +113,7 @@ function MainApp({ session }) {
 
               {/* All other routes require login */}
               <Route path="/clock"       element={guard(<Home />)} />
-              <Route path="/doomscroll"  element={guard(<Doomscroll />)} />
+              <Route path="/doomscroll"  element={guard(<Doomscroll {...doom} />)} />
               <Route path="/world-clock" element={guard(<WorldClock />)} />
               <Route path="/alarms"      element={guard(<Alarms />)} />
               <Route path="/goals"       element={guard(<Goals />)} />
@@ -125,6 +128,7 @@ function MainApp({ session }) {
       {wakeActive    && <WakeAlarmOverlay    onDismiss={() => setWakeActive(false)} />}
       {reverseActive && <ReverseAlarmOverlay onDismiss={() => setReverseActive(false)} />}
       {showLogin     && <LoginSheet onClose={() => setShowLogin(false)} />}
+      <DoomscrollFloat elapsed={doom.elapsed} running={doom.running} stop={doom.stop} />
       <InstallPrompt />
     </BrowserRouter>
   )
