@@ -110,8 +110,13 @@ function FeatureCard({ icon, title, desc, locked }) {
 }
 
 /* ── Main ────────────────────────────────────────────────────────── */
-export default function Landing() {
+export default function Landing({ session, onShowLogin }) {
   const navigate = useNavigate()
+
+  function handleCta() {
+    if (session) navigate('/clock')
+    else onShowLogin()
+  }
 
   return (
     <div className="lp2">
@@ -122,8 +127,8 @@ export default function Landing() {
           <ClockLogo size={28} />
           <span className="lp2-header-name">Tough Love</span>
         </div>
-        <button className="lp2-header-cta" onClick={() => navigate('/clock')}>
-          Open app →
+        <button className="lp2-header-cta" onClick={handleCta}>
+          {session ? 'Open app →' : 'Sign in'}
         </button>
       </header>
 
@@ -146,7 +151,7 @@ export default function Landing() {
             and holds you to what you said you would do.
           </p>
 
-          <button className="lp2-cta-btn" onClick={() => navigate('/clock')}>
+          <button className="lp2-cta-btn" onClick={handleCta}>
             Start for free
           </button>
 
@@ -223,7 +228,7 @@ export default function Landing() {
       <div className="lp2-mid-cta">
         <p className="lp2-mid-cta-label">No trial. No paywall. No upsell guilt.</p>
         <h2 className="lp2-mid-cta-title">All of the above, free.</h2>
-        <button className="lp2-cta-btn" onClick={() => navigate('/clock')}>
+        <button className="lp2-cta-btn" onClick={handleCta}>
           Open the clock →
         </button>
       </div>
@@ -249,14 +254,25 @@ export default function Landing() {
         <p className="lp2-footer-sub">
           No account required. No payment. Just honest tools.
         </p>
-        <button className="lp2-cta-btn" onClick={() => navigate('/clock')}>
+        <button className="lp2-cta-btn" onClick={handleCta}>
           Get started →
         </button>
         <p className="lp2-footer-note">
-          Already have an account?{' '}
-          <button className="lp2-text-link" onClick={() => navigate('/goals')}>
-            Open Goals →
-          </button>
+          {session ? (
+            <>
+              Signed in.{' '}
+              <button className="lp2-text-link" onClick={() => navigate('/goals')}>
+                Go to Goals →
+              </button>
+            </>
+          ) : (
+            <>
+              Have an account?{' '}
+              <button className="lp2-text-link" onClick={onShowLogin}>
+                Sign in →
+              </button>
+            </>
+          )}
         </p>
       </section>
 

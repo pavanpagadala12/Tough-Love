@@ -11,7 +11,6 @@ import WorldClock from './screens/WorldClock'
 import Alarms from './screens/Alarms'
 import Onboarding from './screens/Onboarding'
 import BottomNav from './components/BottomNav'
-import GuestGate from './components/GuestGate'
 import LoginSheet from './components/LoginSheet'
 import { WakeAlarmOverlay, ReverseAlarmOverlay } from './components/AlarmOverlays'
 import InstallPrompt from './components/InstallPrompt'
@@ -33,7 +32,6 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Brief splash only while we check the stored session (usually <200ms)
   if (session === undefined) return <div className="splash" />
 
   return <MainApp session={session} />
@@ -72,15 +70,10 @@ function MainApp({ session }) {
 
   const needsOnboarding = session && !profile?.onboarding_completed
 
-  function requireAuth(element, gateTitle, gateDesc) {
+  // All protected routes redirect to landing if not logged in
+  function guard(element) {
     if (session) return element
-    return (
-      <GuestGate
-        title={gateTitle}
-        desc={gateDesc}
-        onLogin={() => setShowLogin(true)}
-      />
-    )
+    return <Navigate to="/" replace />
   }
 
   return (
@@ -98,28 +91,25 @@ function MainApp({ session }) {
         <>
           <main className={`screen-area${reverseActive ? ' grayscale' : ''}`}>
             <Routes>
-              <Route path="/"            element={<Landing />} />
-              <Route path="/clock"       element={<Home />} />
-              <Route path="/doomscroll"  element={<Doomscroll />} />
-              <Route path="/world-clock" element={<WorldClock />} />
-              <Route path="/alarms"      element={<Alarms />} />
+              {/* Landing — only public page */}
               <Route
-                path="/goals"
-                element={requireAuth(
-                  <Goals />,
-                  'Goals need an account',
-                  'Track commitments, build streaks, and unlock Brutal Mode.'
-                )}
+                path="/"
+                element={
+                  <Landing
+                    session={session}
+                    onShowLogin={() => setShowLogin(true)}
+                  />
+                }
               />
-              <Route
-                path="/settings"
-                element={requireAuth(
-                  <Settings session={session} />,
-                  'Sign in to access settings',
-                  'Manage your account and Brutal Mode preferences.'
-                )}
-              />
-              <Route path="*" element={<Navigate to="/" replace />} />
+
+              {/* All other routes require login */}
+              <Route path="/clock"       element={guard(<Home />)} />
+              <Route path="/doomscroll"  element={guard(<Doomscroll />)} />
+              <Route path="/world-clock" element={guard(<WorldClock />)} />
+              <Route path="/alarms"      element={guard(<Alarms />)} />
+              <Route path="/goals"       element={guard(<Goals />)} />
+              <Route path="/settings"    element={guard(<Settings session={session} />)} />
+              <Route path="*"            element={<Navigate to="/" replace />} />
             </Routes>
           </main>
           <ConditionalBottomNav />
