@@ -137,6 +137,24 @@ export default function Landing({ session, onShowLogin }) {
         {/* Aurora glow blobs */}
         <div className="lp2-aurora lp2-aurora-1" />
         <div className="lp2-aurora lp2-aurora-2" />
+        <div className="lp2-aurora lp2-aurora-3" />
+
+        {/* Large translucent cracked clock in background */}
+        <div className="lp2-bg-clock" aria-hidden>
+          <svg viewBox="0 0 100 100" width="320" height="320">
+            <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(124,111,247,0.1)" strokeWidth="2" />
+            <path d="M 50 16 A 34 34 0 1 1 26 74" fill="none" stroke="rgba(124,111,247,0.12)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M 17 59 A 34 34 0 0 1 50 16" fill="none" stroke="rgba(124,111,247,0.12)" strokeWidth="1.5" strokeLinecap="round" />
+            <polyline points="74,26 44,48 56,52 26,74" fill="none" stroke="rgba(124,111,247,0.07)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points="74,26 44,48 56,52 26,74" fill="none" stroke="rgba(248,246,255,0.05)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
+        {/* Expanding ring ripples (clock metaphor) */}
+        <div className="lp2-rings" aria-hidden>
+          <div className="lp2-ring" />
+          <div className="lp2-ring lp2-ring-2" />
+        </div>
 
         <div className="lp2-hero-content">
           <div className="lp2-eyebrow-pill">Free productivity PWA</div>

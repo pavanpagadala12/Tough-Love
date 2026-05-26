@@ -1985,10 +1985,10 @@ img, svg              { display: block; }
 .lp2-aurora-1 {
   top: -80px;
   left: 50%;
-  transform: translateX(-50%);
   width: 340px;
   height: 340px;
   background: radial-gradient(ellipse, rgba(124, 111, 247, 0.28) 0%, transparent 70%);
+  animation: lp2-float-1 12s ease-in-out infinite;
 }
 
 .lp2-aurora-2 {
@@ -1997,6 +1997,16 @@ img, svg              { display: block; }
   width: 200px;
   height: 200px;
   background: radial-gradient(ellipse, rgba(167, 139, 250, 0.12) 0%, transparent 70%);
+  animation: lp2-float-2 16s ease-in-out infinite;
+}
+
+.lp2-aurora-3 {
+  bottom: -40px;
+  left: -30px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  animation: lp2-float-3 20s ease-in-out infinite;
 }
 
 .lp2-aurora-footer {
@@ -2008,6 +2018,36 @@ img, svg              { display: block; }
   background: radial-gradient(ellipse, rgba(124, 111, 247, 0.2) 0%, transparent 70%);
   top: auto;
 }
+
+/* Background clock illustration */
+.lp2-bg-clock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  animation: lp2-clock-pulse 8s ease-in-out infinite;
+}
+
+/* Expanding ring ripples */
+.lp2-rings {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.lp2-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(124, 111, 247, 0.2);
+  animation: lp2-ring-expand 4.5s ease-out infinite;
+}
+
+.lp2-ring-2 { animation-delay: 2.25s; }
 
 .lp2-hero-content {
   position: relative;
@@ -2030,6 +2070,7 @@ img, svg              { display: block; }
   text-transform: uppercase;
   color: var(--accent-2);
   margin-bottom: 28px;
+  animation: lp2-fade-up 0.7s ease both 0.1s;
 }
 
 /* Headline */
@@ -2041,6 +2082,7 @@ img, svg              { display: block; }
   line-height: 0.95;
   color: var(--text);
   margin-bottom: 22px;
+  animation: lp2-fade-up 0.8s ease both 0.2s;
 }
 
 /* Gradient text */
@@ -2057,6 +2099,11 @@ img, svg              { display: block; }
   line-height: 1.7;
   max-width: 290px;
   margin-bottom: 32px;
+  animation: lp2-fade-up 0.8s ease both 0.35s;
+}
+
+.lp2-hero .lp2-cta-btn {
+  animation: lp2-fade-up 0.8s ease both 0.5s;
 }
 
 /* CTA button (shared) */
@@ -2085,6 +2132,7 @@ img, svg              { display: block; }
   margin-top: 20px;
   flex-wrap: wrap;
   justify-content: center;
+  animation: lp2-fade-up 0.8s ease both 0.65s;
 }
 
 .lp2-stat {
@@ -2198,7 +2246,7 @@ img, svg              { display: block; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.22s;
 }
 
 .bento-card::before {
@@ -2211,7 +2259,13 @@ img, svg              { display: block; }
   background: linear-gradient(90deg, transparent, rgba(124, 111, 247, 0.25), transparent);
 }
 
-.bento-card:active { border-color: rgba(124, 111, 247, 0.35); }
+.bento-card:hover {
+  border-color: rgba(124, 111, 247, 0.3);
+  box-shadow: 0 0 0 1px rgba(124, 111, 247, 0.1), 0 8px 32px rgba(124, 111, 247, 0.12);
+  transform: translateY(-2px);
+}
+
+.bento-card:active { border-color: rgba(124, 111, 247, 0.45); transform: translateY(0); }
 
 .bento-wide { grid-column: span 2; }
 
@@ -2229,7 +2283,13 @@ img, svg              { display: block; }
   line-height: 1;
   display: block;
   margin-bottom: 12px;
+  animation: lp2-icon-float 3s ease-in-out infinite;
 }
+
+.bento-card:nth-child(2) .bento-icon { animation-delay: 0.4s; }
+.bento-card:nth-child(3) .bento-icon { animation-delay: 0.8s; }
+.bento-card:nth-child(4) .bento-icon { animation-delay: 1.2s; }
+.bento-card:nth-child(5) .bento-icon { animation-delay: 1.6s; }
 
 .bento-title {
   font-size: 14px;
@@ -2534,3 +2594,62 @@ img, svg              { display: block; }
 }
 
 .install-btn-close:active { color: var(--text); }
+
+/* ── Landing page motion keyframes ───────────────────────────────── */
+
+/* Aurora blob floats */
+@keyframes lp2-float-1 {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(-22px); }
+}
+
+@keyframes lp2-float-2 {
+  0%, 100% { transform: translateY(0); }
+  40%       { transform: translateY(-16px); }
+  70%       { transform: translateY(8px); }
+}
+
+@keyframes lp2-float-3 {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* Background clock pulse + slow rotate */
+@keyframes lp2-clock-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.8; }
+  50%       { transform: translate(-50%, -50%) scale(1.06) rotate(5deg); opacity: 1; }
+}
+
+/* Ring expand ripple */
+@keyframes lp2-ring-expand {
+  0%   { transform: scale(0.5); opacity: 0.45; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Hero text entrance */
+@keyframes lp2-fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Bento icon gentle float */
+@keyframes lp2-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .lp2-aurora,
+  .lp2-ring,
+  .lp2-bg-clock,
+  .lp2-eyebrow-pill,
+  .lp2-headline,
+  .lp2-hero-sub,
+  .lp2-hero .lp2-cta-btn,
+  .lp2-stats,
+  .bento-icon {
+    animation: none !important;
+  }
+  .lp2-aurora-1 { transform: translateX(-50%); }
+}
