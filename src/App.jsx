@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './supabase'
 import { useAlarmChecker } from './hooks/useAlarmChecker'
+import Landing from './screens/Landing'
 import Home from './screens/Home'
 import Goals from './screens/Goals'
 import Settings from './screens/Settings'
@@ -14,6 +15,12 @@ import GuestGate from './components/GuestGate'
 import LoginSheet from './components/LoginSheet'
 import { WakeAlarmOverlay, ReverseAlarmOverlay } from './components/AlarmOverlays'
 import InstallPrompt from './components/InstallPrompt'
+
+function ConditionalBottomNav() {
+  const { pathname } = useLocation()
+  if (pathname === '/') return null
+  return <BottomNav />
+}
 
 export default function App() {
   const [session, setSession] = useState(undefined)
@@ -91,7 +98,8 @@ function MainApp({ session }) {
         <>
           <main className={`screen-area${reverseActive ? ' grayscale' : ''}`}>
             <Routes>
-              <Route path="/"            element={<Home />} />
+              <Route path="/"            element={<Landing />} />
+              <Route path="/clock"       element={<Home />} />
               <Route path="/doomscroll"  element={<Doomscroll />} />
               <Route path="/world-clock" element={<WorldClock />} />
               <Route path="/alarms"      element={<Alarms />} />
@@ -114,7 +122,7 @@ function MainApp({ session }) {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <BottomNav />
+          <ConditionalBottomNav />
         </>
       )}
 

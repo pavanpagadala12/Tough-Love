@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 
 const tabs = [
   {
-    to: '/',
+    to: '/clock',
     label: 'Clock',
     icon: (
       <svg className="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -44,7 +44,7 @@ export default function BottomNav() {
         <NavLink
           key={to}
           to={to}
-          end={to === '/'}
+          end
           className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}
         >
           {icon}
