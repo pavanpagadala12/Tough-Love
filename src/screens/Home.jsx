@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTimer } from '../hooks/useTimer'
+import { supabase } from '../supabase'
 
 const DURATIONS = [15, 25, 45, 60]
 
@@ -57,6 +58,87 @@ function CircularTimer({ fraction, status }) {
         style={{ transition: 'stroke-dasharray 0.6s ease, stroke 1.5s ease' }}
       />
     </svg>
+  )
+}
+
+function DueDateChip({ dueAt }) {
+  if (!dueAt) return null
+  const due   = new Date(dueAt)
+  const today = new Date(); today.setHours(0,0,0,0)
+  const diff  = Math.ceil((due - today) / 86400000)
+  const label = diff < 0 ? 'Overdue' : diff === 0 ? 'Due today' : diff === 1 ? 'Due tomorrow'
+              : `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+  return <span className={`home-goal-chip${diff < 0 ? ' overdue' : ''}`}>{label}</span>
+}
+
+function TodaysGoals({ navigate }) {
+  const [goals,   setGoals]   = useState([])
+  const [streaks, setStreaks] = useState({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+
+      const [goalsRes, streaksRes] = await Promise.all([
+        supabase.from('goals').select('id,title,cadence,due_at,status')
+          .eq('user_id', user.id).eq('status', 'active')
+          .order('created_at', { ascending: true }).limit(3),
+        supabase.from('streaks').select('goal_id,current_streak').eq('user_id', user.id),
+      ])
+
+      if (goalsRes.data)   setGoals(goalsRes.data)
+      if (streaksRes.data) {
+        const map = {}
+        streaksRes.data.forEach(s => { map[s.goal_id] = s.current_streak })
+        setStreaks(map)
+      }
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return null
+
+  return (
+    <div className="home-goals-section">
+      <div className="home-goals-header">
+        <p className="label">Today's commitments</p>
+        <button className="home-goals-seeall" onClick={() => navigate('/goals')}>
+          See all →
+        </button>
+      </div>
+
+      {goals.length === 0 ? (
+        <button className="home-goals-empty" onClick={() => navigate('/goals')}>
+          + Set your first goal →
+        </button>
+      ) : (
+        <div className="home-goals-list">
+          {goals.map(goal => {
+            const isDaily   = (goal.cadence ?? 'daily') === 'daily'
+            const streak    = streaks[goal.id] ?? 0
+            return (
+              <button
+                key={goal.id}
+                className="home-goal-row"
+                onClick={() => navigate('/goals')}
+              >
+                <div className="home-goal-left">
+                  {isDaily
+                    ? <span className="home-goal-chip">{streak > 0 ? `🔥 ${streak}` : '—'}</span>
+                    : <DueDateChip dueAt={goal.due_at} />
+                  }
+                  <span className="home-goal-title">{goal.title}</span>
+                </div>
+                <span className="home-goal-arrow">→</span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -136,8 +218,8 @@ export default function Home() {
 
             <button className="tool-card" onClick={() => navigate('/doomscroll')}>
               <div className="tool-card-text">
-                <p className="tool-card-title">Doomscroll Stopwatch</p>
-                <p className="tool-card-body">Time your next scroll session honestly.</p>
+                <p className="tool-card-title">Doomscroll Tracker</p>
+                <p className="tool-card-body">See exactly how long you spend in each app.</p>
               </div>
               <span className="tool-card-arrow">→</span>
             </button>
@@ -160,6 +242,8 @@ export default function Home() {
           </div>
 
         </div>
+
+        <TodaysGoals navigate={navigate} />
       </div>
     </>
   )
