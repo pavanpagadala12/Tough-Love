@@ -113,7 +113,7 @@ function MainApp({ session }) {
 
               {/* All other routes require login */}
               <Route path="/clock"       element={guard(<Home />)} />
-              <Route path="/doomscroll"  element={guard(<Doomscroll {...doom} />)} />
+              <Route path="/doomscroll"  element={guard(<Doomscroll />)} />
               <Route path="/world-clock" element={guard(<WorldClock />)} />
               <Route path="/alarms"      element={guard(<Alarms />)} />
               <Route path="/goals"       element={guard(<Goals />)} />
