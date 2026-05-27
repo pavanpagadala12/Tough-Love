@@ -157,7 +157,7 @@ export default function Landing({ session, onShowLogin }) {
         </div>
 
         <div className="lp2-hero-content">
-          <div className="lp2-eyebrow-pill">Free productivity PWA</div>
+          <div className="lp2-eyebrow-pill">Free productivity app</div>
 
           <h1 className="lp2-headline">
             Time,<br />
