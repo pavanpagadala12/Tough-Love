@@ -1873,6 +1873,41 @@ img, svg              { display: block; }
   font-style: italic;
 }
 
+.settings-notif-status {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.settings-notif-on {
+  color: #10B981;
+  background: rgba(16,185,129,0.12);
+}
+.settings-notif-off {
+  color: var(--danger);
+  background: rgba(239,68,68,0.1);
+}
+
+.settings-enable-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 4px 14px;
+  border: 1px solid rgba(124,111,247,0.35);
+  border-radius: 20px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.settings-enable-btn:hover {
+  background: rgba(124,111,247,0.1);
+}
+
+.settings-row-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
 .settings-toggle-row {
   flex-direction: column;
   align-items: flex-start !important;

@@ -24,11 +24,69 @@ function SettingsToggleRow({ label, desc, checked, onChange }) {
   )
 }
 
+function NotificationRow() {
+  const supported = 'Notification' in window
+  const [permission, setPermission] = useState(supported ? Notification.permission : 'unsupported')
+  const [requesting, setRequesting] = useState(false)
+
+  async function requestPermission() {
+    if (!supported) return
+    setRequesting(true)
+    const result = await Notification.requestPermission()
+    setPermission(result)
+    setRequesting(false)
+  }
+
+  if (!supported) {
+    return (
+      <div className="settings-row">
+        <span className="settings-row-label">Notifications</span>
+        <span className="settings-row-value" style={{ color: 'var(--text-2)' }}>Not supported</span>
+      </div>
+    )
+  }
+
+  if (permission === 'granted') {
+    return (
+      <div className="settings-row">
+        <span className="settings-row-label">Notifications</span>
+        <span className="settings-notif-status settings-notif-on">On</span>
+      </div>
+    )
+  }
+
+  if (permission === 'denied') {
+    return (
+      <div className="settings-row settings-row-col">
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <span className="settings-row-label">Notifications</span>
+          <span className="settings-notif-status settings-notif-off">Blocked</span>
+        </div>
+        <span className="settings-row-desc" style={{ marginTop: 4 }}>
+          Enable in your device Settings → Apps → Tough Love → Notifications.
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="settings-row settings-toggle-row">
+      <div className="settings-toggle-text">
+        <span className="settings-row-label">Notifications</span>
+        <span className="settings-row-desc">Required for alarms and witness alerts.</span>
+      </div>
+      <button className="settings-enable-btn" onClick={requestPermission} disabled={requesting}>
+        {requesting ? '…' : 'Enable'}
+      </button>
+    </div>
+  )
+}
+
 export default function Settings({ session }) {
   const [consents, setConsents] = useState({
-    letter:       false,
+    letter:        false,
     reality_check: false,
-    witness:      false,
+    witness:       false,
   })
   const [saving, setSaving] = useState(false)
 
@@ -41,9 +99,9 @@ export default function Settings({ session }) {
       .then(({ data }) => {
         if (data) {
           setConsents({
-            letter:       data.consent_letter       ?? false,
+            letter:        data.consent_letter        ?? false,
             reality_check: data.consent_reality_check ?? false,
-            witness:      data.consent_witness      ?? false,
+            witness:       data.consent_witness       ?? false,
           })
         }
       })
@@ -82,6 +140,14 @@ export default function Settings({ session }) {
               <span className="settings-row-label">Email</span>
               <span className="settings-row-value">{session.user.email}</span>
             </div>
+          </div>
+        </div>
+
+        {/* Notifications */}
+        <div>
+          <p className="settings-section-title">Notifications</p>
+          <div className="settings-group">
+            <NotificationRow />
           </div>
         </div>
 
