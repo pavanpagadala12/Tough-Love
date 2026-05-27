@@ -88,6 +88,11 @@ create table public.goals (
   stake_level text not null default 'willpower'
     check (stake_level in ('willpower', 'reputation', 'future')),
 
+  -- 'daily'    = repeating habit with streak tracking
+  -- 'one_time' = single commitment with optional due date
+  cadence text not null default 'daily'
+    check (cadence in ('daily', 'one_time')),
+
   -- Step 2 of two-step consent: user must also have consent_* = true in profiles
   stick_letter        boolean not null default false,
   stick_reality_check boolean not null default false,

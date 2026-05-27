@@ -61,6 +61,8 @@ function StickRow({ icon, label, desc, checked, onChange }) {
 // ── Add Goal sheet ───────────────────────────────────────────────────
 function AddGoalSheet({ userId, consents, onSaved, onClose }) {
   const [title,        setTitle]        = useState('')
+  const [cadence,      setCadence]      = useState('daily')
+  const [dueDate,      setDueDate]      = useState('')
   const [stakeLevel,   setStakeLevel]   = useState('willpower')
   const [stickLetter,  setStickLetter]  = useState(false)
   const [stickReality, setStickReality] = useState(false)
@@ -77,13 +79,19 @@ function AddGoalSheet({ userId, consents, onSaved, onClose }) {
     if (stickWitness && (!witnessName.trim() || !witnessEmail.trim())) return
     setLoading(true)
 
+    const dueAt = cadence === 'one_time' && dueDate
+      ? new Date(dueDate + 'T23:59:59').toISOString()
+      : null
+
     const { data: goal, error } = await supabase.from('goals').insert({
-      user_id:            userId,
-      title:              title.trim(),
-      stake_level:        stakeLevel,
-      stick_letter:       stickLetter,
+      user_id:             userId,
+      title:               title.trim(),
+      cadence,
+      due_at:              dueAt,
+      stake_level:         stakeLevel,
+      stick_letter:        stickLetter,
       stick_reality_check: stickReality,
-      stick_witness:      stickWitness,
+      stick_witness:       stickWitness,
     }).select().single()
 
     if (error || !goal) { setLoading(false); return }
@@ -118,16 +126,52 @@ function AddGoalSheet({ userId, consents, onSaved, onClose }) {
         <h2 className="sheet-title">New goal</h2>
 
         <div className="ob-field">
+          <p className="alarm-field-label">Type</p>
+          <div className="cadence-toggle">
+            <button
+              className={`cadence-btn${cadence === 'daily' ? ' active' : ''}`}
+              onClick={() => setCadence('daily')}
+            >
+              🔁 Daily habit
+            </button>
+            <button
+              className={`cadence-btn${cadence === 'one_time' ? ' active' : ''}`}
+              onClick={() => setCadence('one_time')}
+            >
+              🎯 One-time goal
+            </button>
+          </div>
+          <p className="ob-pyramid-hint">
+            {cadence === 'daily'
+              ? 'Repeats every day. Builds a streak.'
+              : 'Single commitment. Done or failed — permanently.'}
+          </p>
+        </div>
+
+        <div className="ob-field">
           <p className="alarm-field-label">I will…</p>
           <input
             className="input-field"
-            placeholder="e.g. Read for 20 minutes tonight"
+            placeholder={cadence === 'daily' ? 'e.g. Read for 20 minutes' : 'e.g. Finish the project brief'}
             value={title}
             onChange={e => setTitle(e.target.value)}
             maxLength={120}
             autoFocus
           />
         </div>
+
+        {cadence === 'one_time' && (
+          <div className="ob-field">
+            <p className="alarm-field-label">Due by (optional)</p>
+            <input
+              type="date"
+              className="input-field"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              min={new Date().toISOString().slice(0, 10)}
+            />
+          </div>
+        )}
 
         <div className="ob-field">
           <p className="alarm-field-label">Stake level</p>
@@ -237,13 +281,31 @@ function StreakBadge({ count }) {
 }
 
 // ── Goal card ────────────────────────────────────────────────────────
-function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
-  const [busy,        setBusy]        = useState(false)
-  const [todayState,  setTodayState]  = useState(null) // 'done' | 'failed' | null
-  const [confirming,  setConfirming]  = useState(false)
+function DueDateChip({ dueAt }) {
+  if (!dueAt) return null
+  const due   = new Date(dueAt)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const diff  = Math.ceil((due - today) / (1000 * 60 * 60 * 24))
+  const label = diff < 0  ? 'Overdue'
+              : diff === 0 ? 'Due today'
+              : diff === 1 ? 'Due tomorrow'
+              : `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+  const overdue = diff < 0
+  return (
+    <span className={`goal-due-chip${overdue ? ' overdue' : ''}`}>{label}</span>
+  )
+}
 
-  const stakeInfo = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
-  const isActive  = goal.status === 'active'
+function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
+  const [busy,       setBusy]       = useState(false)
+  const [todayState, setTodayState] = useState(null)
+  const [confirming, setConfirming] = useState(false)
+
+  const stakeInfo  = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
+  const isActive   = goal.status === 'active'
+  const isDaily    = (goal.cadence ?? 'daily') === 'daily'
+  const isOneTime  = !isDaily
 
   async function handleComplete() {
     setBusy(true)
@@ -270,7 +332,8 @@ function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
       <div className="goal-card-top">
         <div className="goal-card-meta">
           <span className="goal-stake-badge">{stakeInfo.icon} {stakeInfo.label}</span>
-          {isActive && <StreakBadge count={streak?.current_streak ?? 0} />}
+          {isActive && isDaily  && <StreakBadge count={streak?.current_streak ?? 0} />}
+          {isActive && isOneTime && <DueDateChip dueAt={goal.due_at} />}
         </div>
         <p className="goal-title">{goal.title}</p>
         {isActive && (goal.stick_letter || goal.stick_reality_check || goal.stick_witness) && (
@@ -282,7 +345,8 @@ function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
         )}
       </div>
 
-      {isActive && todayState === null && !confirming && (
+      {/* ── Daily goal actions ─────────────────────────── */}
+      {isActive && isDaily && todayState === null && !confirming && (
         <>
           <div className="goal-card-actions">
             <button className="goal-btn goal-btn-complete" onClick={handleComplete} disabled={busy}>
@@ -298,12 +362,12 @@ function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
         </>
       )}
 
-      {isActive && todayState === null && confirming && (
+      {isActive && isDaily && todayState === null && confirming && (
         <div className="goal-confirm-archive">
           <p className="goal-confirm-text">Mark as permanently complete?</p>
           <div className="goal-card-actions">
             <button className="goal-btn goal-btn-complete" onClick={handleArchive} disabled={busy}>
-              {busy ? '…' : 'Yes, I\'m done'}
+              {busy ? '…' : "Yes, I'm done"}
             </button>
             <button className="goal-btn goal-btn-fail" onClick={() => setConfirming(false)} disabled={busy}>
               Cancel
@@ -312,18 +376,39 @@ function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
         </div>
       )}
 
-      {isActive && todayState === 'done' && (
+      {isActive && isDaily && todayState === 'done' && (
         <div className="goal-today-feedback goal-today-done">
           ✓ Logged — streak extended. See you tomorrow.
         </div>
       )}
 
-      {isActive && todayState === 'failed' && (
+      {isActive && isDaily && todayState === 'failed' && (
         <div className="goal-today-feedback goal-today-failed">
           Logged. Streak reset. You can still try again tomorrow.
         </div>
       )}
 
+      {/* ── One-time goal actions ──────────────────────── */}
+      {isActive && isOneTime && todayState === null && (
+        <div className="goal-card-actions">
+          <button className="goal-btn goal-btn-complete" onClick={handleComplete} disabled={busy}>
+            {busy ? '…' : '✓ Done'}
+          </button>
+          <button className="goal-btn goal-btn-fail" onClick={handleFail} disabled={busy}>
+            {busy ? '…' : '✗ Failed'}
+          </button>
+        </div>
+      )}
+
+      {isActive && isOneTime && todayState === 'done' && (
+        <div className="goal-today-feedback goal-today-done">✓ Marked complete.</div>
+      )}
+
+      {isActive && isOneTime && todayState === 'failed' && (
+        <div className="goal-today-feedback goal-today-failed">Marked as failed.</div>
+      )}
+
+      {/* ── Inactive (past) goals ──────────────────────── */}
       {!isActive && (
         <div className="goal-card-status">
           <span className={`goal-status-pill goal-status-${goal.status}`}>
@@ -413,43 +498,80 @@ export default function Goals() {
   }
 
   async function handleComplete(goal, streak) {
-    const now       = new Date().toISOString()
-    const newStreak = (streak?.current_streak ?? 0) + 1
-    const maxStreak = Math.max(newStreak, streak?.longest_streak ?? 0)
+    const now      = new Date().toISOString()
+    const isDaily  = (goal.cadence ?? 'daily') === 'daily'
 
-    await supabase.from('streaks').upsert({
-      user_id: userId, goal_id: goal.id,
-      current_streak: newStreak, longest_streak: maxStreak,
-      last_completed_at: now,
-    }, { onConflict: 'user_id,goal_id' })
-
-    await supabase.from('time_bank_entries').insert({
-      user_id: userId, goal_id: goal.id, minutes: 5, reason: 'goal_completed',
-    })
-
-    await supabase.from('goal_sessions').insert({
-      user_id: userId, goal_id: goal.id, outcome: 'completed',
-    })
-
-    // Reveal letter if it exists
-    if (goal.stick_letter) {
-      const { data: letter } = await supabase
-        .from('letters')
-        .select('content')
-        .eq('goal_id', goal.id)
-        .is('deleted_at', null)
-        .single()
-      if (letter?.content) {
-        setLetterReveal({ content: letter.content, goalTitle: goal.title })
+    if (isDaily) {
+      const newStreak = (streak?.current_streak ?? 0) + 1
+      const maxStreak = Math.max(newStreak, streak?.longest_streak ?? 0)
+      await supabase.from('streaks').upsert({
+        user_id: userId, goal_id: goal.id,
+        current_streak: newStreak, longest_streak: maxStreak,
+        last_completed_at: now,
+      }, { onConflict: 'user_id,goal_id' })
+      await supabase.from('goal_sessions').insert({
+        user_id: userId, goal_id: goal.id, outcome: 'completed',
+      })
+      await supabase.from('time_bank_entries').insert({
+        user_id: userId, goal_id: goal.id, minutes: 5, reason: 'goal_completed',
+      })
+      if (goal.stick_letter) {
+        const { data: letter } = await supabase
+          .from('letters').select('content')
+          .eq('goal_id', goal.id).is('deleted_at', null).single()
+        if (letter?.content) setLetterReveal({ content: letter.content, goalTitle: goal.title })
       }
+      await loadData(userId)
+      setCareGoal({ goal, streak: newStreak })
+    } else {
+      // One-time: mark permanently complete
+      await supabase.from('goals').update({ status: 'completed' }).eq('id', goal.id)
+      await supabase.from('time_bank_entries').insert({
+        user_id: userId, goal_id: goal.id, minutes: 10, reason: 'one_time_goal_completed',
+      })
+      if (goal.stick_letter) {
+        const { data: letter } = await supabase
+          .from('letters').select('content')
+          .eq('goal_id', goal.id).is('deleted_at', null).single()
+        if (letter?.content) setLetterReveal({ content: letter.content, goalTitle: goal.title })
+      }
+      await loadData(userId)
+      setCareGoal({ goal, streak: 1 })
     }
-
-    await loadData(userId)
-    setCareGoal({ goal, streak: newStreak })
   }
 
   async function handleFail(goal, streak) {
-    const now           = new Date().toISOString()
+    const now      = new Date().toISOString()
+    const isDaily  = (goal.cadence ?? 'daily') === 'daily'
+
+    if (!isDaily) {
+      // One-time: mark permanently failed
+      await supabase.from('goals').update({ status: 'failed' }).eq('id', goal.id)
+      await supabase.from('goal_sessions').insert({
+        user_id: userId, goal_id: goal.id, outcome: 'failed',
+      })
+      if (goal.stick_letter) {
+        await supabase.from('letters')
+          .update({ content: null, deleted_at: now })
+          .eq('goal_id', goal.id).is('deleted_at', null)
+      }
+      if (goal.stick_witness) {
+        const { data: witness } = await supabase
+          .from('witnesses').select('witness_name, witness_email').eq('goal_id', goal.id).single()
+        if (witness) {
+          const subject = encodeURIComponent(`I broke my commitment: ${goal.title}`)
+          const body    = encodeURIComponent(
+            `Hi ${witness.witness_name},\n\nI told you I would "${goal.title}" and I didn't do it.\n\nI'm being honest because I said I would be.\n\n— sent via Tough Love`
+          )
+          window.open(`mailto:${witness.witness_email}?subject=${subject}&body=${body}`)
+          await supabase.from('witnesses').update({ notified_at: now }).eq('goal_id', goal.id)
+        }
+      }
+      await loadData(userId)
+      if (goal.stick_reality_check) setRealityGoal({ ...goal, lostStreak: 0 })
+      return
+    }
+
     const curStreak     = streak?.current_streak ?? 0
     const curMonth      = now.slice(0, 7)
     const insuranceUsed = streak?.insurance_used_month
