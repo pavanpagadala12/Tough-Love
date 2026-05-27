@@ -1,4 +1,4 @@
-const MODEL = 'gemini-1.5-flash'
+const MODEL = 'gemini-2.0-flash'
 const BASE  = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 
 const SYSTEM = `You are the Tough Love goal coach — honest, warm, and direct.
@@ -8,7 +8,10 @@ Get straight to the point.`
 
 async function callGemini(userPrompt, maxTokens = 180) {
   const key = import.meta.env.VITE_GEMINI_API_KEY
-  if (!key) return null
+  if (!key) {
+    console.error('[AI] VITE_GEMINI_API_KEY is not set')
+    return null
+  }
   try {
     const res = await fetch(`${BASE}?key=${key}`, {
       method:  'POST',
@@ -20,10 +23,15 @@ async function callGemini(userPrompt, maxTokens = 180) {
         generationConfig: { maxOutputTokens: maxTokens, temperature: 0.75 },
       }),
     })
-    if (!res.ok) return null
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      console.error('[AI] Gemini error', res.status, err)
+      return `Error ${res.status} — ${err?.error?.message ?? 'check API key'}`
+    }
     const json = await res.json()
     return json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null
-  } catch {
+  } catch (e) {
+    console.error('[AI] fetch failed', e)
     return null
   }
 }
