@@ -1,17 +1,25 @@
 import { useState, useRef, useEffect } from 'react'
+import { getFailureRecovery } from '../ai'
 
 const HOLD_MS = 5000
 
 export default function RealityCheck({ goal, lostStreak, onDismiss }) {
-  const [visible,  setVisible]  = useState(false)
-  const [holdPct,  setHoldPct]  = useState(0)
-  const [holding,  setHolding]  = useState(false)
-  const [phase,    setPhase]    = useState('check') // 'check' | 'recovery'
+  const [visible,   setVisible]   = useState(false)
+  const [holdPct,   setHoldPct]   = useState(0)
+  const [holding,   setHolding]   = useState(false)
+  const [phase,     setPhase]     = useState('check') // 'check' | 'recovery'
+  const [aiAdvice,  setAiAdvice]  = useState(null)
   const holdStart  = useRef(null)
   const rafRef     = useRef(null)
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true))
+    // Pre-load AI advice while user reads the check screen
+    getFailureRecovery({
+      title: goal.title,
+      lostStreak: lostStreak ?? 0,
+      recentFailCount: goal.recentFailCount ?? 0,
+    }).then(msg => { if (msg) setAiAdvice(msg) })
     return () => cancelAnimationFrame(rafRef.current)
   }, [])
 
@@ -101,6 +109,13 @@ export default function RealityCheck({ goal, lostStreak, onDismiss }) {
             <h1 className="rc-headline" style={{ fontSize: '1.75rem' }}>
               One miss doesn&apos;t<br />end the story.
             </h1>
+
+            {aiAdvice && (
+              <div className="rc-ai-card">
+                <span className="ai-badge">AI coach</span>
+                <p className="rc-ai-text">{aiAdvice}</p>
+              </div>
+            )}
 
             <div className="rc-recovery-list">
               <div className="rc-recovery-row">

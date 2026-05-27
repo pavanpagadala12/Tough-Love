@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import CarePackage from '../components/CarePackage'
 import RealityCheck from '../components/RealityCheck'
 import StreakInsuranceSheet from '../components/StreakInsuranceSheet'
+import { getGoalCoaching, getFailureRecovery, getLetterPrompts } from '../ai'
 
 // ── Stake Pyramid ────────────────────────────────────────────────────
 const STAKE_LEVELS = [
@@ -60,17 +61,19 @@ function StickRow({ icon, label, desc, checked, onChange }) {
 
 // ── Add Goal sheet ───────────────────────────────────────────────────
 function AddGoalSheet({ userId, consents, onSaved, onClose }) {
-  const [title,        setTitle]        = useState('')
-  const [cadence,      setCadence]      = useState('daily')
-  const [dueDate,      setDueDate]      = useState('')
-  const [stakeLevel,   setStakeLevel]   = useState('willpower')
-  const [stickLetter,  setStickLetter]  = useState(false)
-  const [stickReality, setStickReality] = useState(false)
-  const [stickWitness, setStickWitness] = useState(false)
-  const [letterText,   setLetterText]   = useState('')
-  const [witnessName,  setWitnessName]  = useState('')
-  const [witnessEmail, setWitnessEmail] = useState('')
-  const [loading,      setLoading]      = useState(false)
+  const [title,          setTitle]          = useState('')
+  const [cadence,        setCadence]        = useState('daily')
+  const [dueDate,        setDueDate]        = useState('')
+  const [stakeLevel,     setStakeLevel]     = useState('willpower')
+  const [stickLetter,    setStickLetter]    = useState(false)
+  const [stickReality,   setStickReality]   = useState(false)
+  const [stickWitness,   setStickWitness]   = useState(false)
+  const [letterText,     setLetterText]     = useState('')
+  const [witnessName,    setWitnessName]    = useState('')
+  const [witnessEmail,   setWitnessEmail]   = useState('')
+  const [loading,        setLoading]        = useState(false)
+  const [letterPrompts,  setLetterPrompts]  = useState([])
+  const [promptsLoading, setPromptsLoading] = useState(false)
 
   const hasAnyStick = consents.letter || consents.reality_check || consents.witness
 
@@ -226,6 +229,41 @@ function AddGoalSheet({ userId, consents, onSaved, onClose }) {
               maxLength={1000}
             />
             <p className="ob-pyramid-hint">You'll only read this if you succeed.</p>
+
+            {/* AI letter prompts */}
+            <div className="letter-prompts-wrap">
+              {letterPrompts.length === 0 && !promptsLoading && (
+                <button
+                  className="letter-prompts-trigger"
+                  onClick={async () => {
+                    if (!title.trim()) return
+                    setPromptsLoading(true)
+                    const prompts = await getLetterPrompts(title.trim())
+                    setLetterPrompts(prompts)
+                    setPromptsLoading(false)
+                  }}
+                >
+                  ✦ Get writing prompts
+                </button>
+              )}
+              {promptsLoading && <p className="ai-loading">Generating prompts…</p>}
+              {letterPrompts.length > 0 && (
+                <>
+                  <p className="letter-prompts-label">Tap a prompt to use it as a starting point:</p>
+                  <div className="letter-prompt-list">
+                    {letterPrompts.map((p, i) => (
+                      <button
+                        key={i}
+                        className="letter-prompt-item"
+                        onClick={() => setLetterText(prev => prev ? `${prev}\n\n${p}` : p)}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )}
 
@@ -298,17 +336,22 @@ function DueDateChip({ dueAt }) {
 }
 
 function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDelete }) {
-  const [busy,       setBusy]       = useState(false)
-  const [confirming, setConfirming] = useState(false)
-  // Optimistic state — set immediately on button press so UI feels instant.
-  // DB-sourced state (from history prop) always wins when available.
+  const [busy,            setBusy]            = useState(false)
+  const [confirming,      setConfirming]      = useState(false)
   const [optimisticState, setOptimisticState] = useState(null)
+  const [coachMsg,        setCoachMsg]        = useState(null)
+  const [coachLoading,    setCoachLoading]    = useState(false)
+  const [aiRecovery,      setAiRecovery]      = useState(null)
 
-  const todayKey = new Date().toISOString().slice(0, 10)
-  const dbOutcome = history?.[todayKey] ?? null
+  const todayKey   = new Date().toISOString().slice(0, 10)
+  const dbOutcome  = history?.[todayKey] ?? null
   const todayState = dbOutcome === 'completed' ? 'done'
                    : dbOutcome === 'failed'    ? 'failed'
                    : optimisticState
+
+  const histValues     = Object.values(history ?? {})
+  const completedCount = histValues.filter(v => v === 'completed').length
+  const failedCount    = histValues.filter(v => v === 'failed').length
 
   const stakeInfo  = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
   const isActive   = goal.status === 'active'
@@ -325,8 +368,29 @@ function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDele
   async function handleFail() {
     setBusy(true)
     setOptimisticState('failed')
+    // Load AI recovery in background for goals without reality_check
+    if (!goal.stick_reality_check) {
+      getFailureRecovery({
+        title: goal.title,
+        lostStreak: streak?.current_streak ?? 0,
+        recentFailCount: failedCount + 1,
+      }).then(msg => { if (msg) setAiRecovery(msg) })
+    }
     await onFail(goal, streak)
     setBusy(false)
+  }
+
+  async function handleCoach() {
+    setCoachLoading(true)
+    setCoachMsg(null)
+    const msg = await getGoalCoaching({
+      title: goal.title,
+      streak: streak?.current_streak ?? 0,
+      completedCount,
+      failedCount,
+    })
+    setCoachMsg(msg ?? 'No response — check your API key.')
+    setCoachLoading(false)
   }
 
   async function handleArchive() {
@@ -354,6 +418,27 @@ function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDele
       </div>
 
       {isActive && isDaily && <StreakCalendar history={history} />}
+
+      {/* ── AI Coach ──────────────────────────────────── */}
+      {isActive && isDaily && todayState === null && (
+        <div className="ai-coach-section">
+          {!coachMsg && !coachLoading && (
+            <button className="ai-coach-trigger" onClick={handleCoach}>
+              ✦ Ask coach
+            </button>
+          )}
+          {coachLoading && <p className="ai-loading">Thinking…</p>}
+          {coachMsg && (
+            <div className="ai-coach-card">
+              <div className="ai-coach-header">
+                <span className="ai-badge">AI coach</span>
+                <button className="ai-coach-dismiss" onClick={() => setCoachMsg(null)}>×</button>
+              </div>
+              <p className="ai-coach-text">{coachMsg}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Daily goal actions ─────────────────────────── */}
       {isActive && isDaily && todayState === null && !confirming && (
@@ -393,9 +478,17 @@ function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDele
       )}
 
       {isActive && isDaily && todayState === 'failed' && (
-        <div className="goal-today-feedback goal-today-failed">
-          Logged. Streak reset. You can still try again tomorrow.
-        </div>
+        <>
+          <div className="goal-today-feedback goal-today-failed">
+            Logged. Streak reset. You can still try again tomorrow.
+          </div>
+          {aiRecovery && (
+            <div className="ai-coach-card ai-recovery-card">
+              <span className="ai-badge">AI coach</span>
+              <p className="ai-coach-text">{aiRecovery}</p>
+            </div>
+          )}
+        </>
       )}
 
       {/* ── One-time goal actions ──────────────────────── */}
@@ -675,7 +768,9 @@ export default function Goals() {
     await loadData(userId)
 
     if (goal.stick_reality_check) {
-      setRealityGoal({ ...goal, lostStreak: curStreak })
+      const goalHist = sessionHistory[goal.id] ?? {}
+      const recentFailCount = Object.values(goalHist).filter(v => v === 'failed').length + 1
+      setRealityGoal({ ...goal, lostStreak: curStreak, recentFailCount })
     }
   }
 

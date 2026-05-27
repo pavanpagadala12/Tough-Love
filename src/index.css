@@ -1812,6 +1812,126 @@ img, svg              { display: block; }
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
+/* ── AI Coach ─────────────────────────────────────────────────────── */
+.ai-coach-section { margin-top: 8px; }
+
+.ai-coach-trigger {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(124,111,247,0.6);
+  padding: 4px 0;
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
+}
+.ai-coach-trigger:hover { color: #7C6FF7; }
+
+.ai-coach-card {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(124,111,247,0.07);
+  border: 1px solid rgba(124,111,247,0.18);
+}
+.ai-recovery-card { margin-top: 10px; }
+
+.ai-coach-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ai-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(124,111,247,0.65);
+}
+
+.ai-coach-dismiss {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-2);
+  padding: 0 2px;
+  transition: color 0.15s;
+}
+.ai-coach-dismiss:hover { color: var(--text); }
+
+.ai-coach-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.ai-loading {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 8px;
+  animation: ai-pulse 1.4s ease-in-out infinite;
+}
+@keyframes ai-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 1; }
+}
+
+/* ── Letter prompts ───────────────────────────────────────────────── */
+.letter-prompts-wrap { margin-top: 12px; }
+
+.letter-prompts-trigger {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(124,111,247,0.65);
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.letter-prompts-trigger:hover { color: #7C6FF7; }
+
+.letter-prompts-label {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.letter-prompt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.letter-prompt-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(124,111,247,0.06);
+  border: 1px solid rgba(124,111,247,0.14);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+  text-align: left;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.letter-prompt-item:hover {
+  background: rgba(124,111,247,0.12);
+  border-color: rgba(124,111,247,0.28);
+  color: var(--text);
+}
+
+/* ── RealityCheck AI card ─────────────────────────────────────────── */
+.rc-ai-card {
+  margin: 16px 0 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(124,111,247,0.1);
+  border: 1px solid rgba(124,111,247,0.22);
+}
+.rc-ai-card .ai-badge { display: block; margin-bottom: 6px; }
+.rc-ai-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+  font-style: italic;
+}
+
 /* Time Bank bar */
 .time-bank-bar {
   display: flex;
