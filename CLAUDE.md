@@ -58,14 +58,14 @@ If I ask for any of the above during v1 work, push back and remind me
 we agreed they're v2. Don't silently build them.
 
 ## Tech stack (locked)
-- React + Vite frontend (PWA from day one)
+- React + Vite frontend
+- Capacitor for Android APK / Play Store packaging (replaces PWA-only approach)
 - Supabase: Postgres + Auth + Row Level Security — free tier only
-- Vercel for deployment — free tier only
+- Vercel for deployment (web) — free tier only
 - GitHub for code
-- Manifest.json + service worker — installable on phone home screen
 - Web Push API for notifications
 - Zero monthly cost — never suggest paid services without flagging clearly
-- Android-native is v2 — DO NOT propose React Native, Capacitor, etc. for v1
+- React Native is still off the table — Capacitor wraps the existing web app, no rewrite
 
 ## Wellbeing and ethics rules (these are non-negotiable)
 Productivity-punishment apps can genuinely harm users if built carelessly.
