@@ -600,15 +600,65 @@ img, svg              { display: block; }
 /* ── Doomscroll screen ────────────────────────────────────────────── */
 .doomscroll-screen {
   min-height: 100%;
+  position: relative;
   background: linear-gradient(180deg, #0D0D12 0%, #1A0808 100%);
 }
+.doom-red-overlay {
+  position: fixed;
+  inset: 0;
+  background: #EF4444;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 4s ease;
+}
 .doomscroll-body {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 48px 32px 48px;
+  gap: 24px;
+  padding: 32px 24px 48px;
 }
+
+/* Day drain bar */
+.doom-drain-wrap {
+  width: 100%;
+}
+.doom-drain-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.doom-drain-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(239,68,68,0.5);
+}
+.doom-drain-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #EF4444;
+}
+.doom-drain-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(239,68,68,0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.doom-drain-fill {
+  height: 100%;
+  background: #EF4444;
+  border-radius: 999px;
+  transition: width 1s linear;
+  box-shadow: 0 0 8px rgba(239,68,68,0.6);
+}
+
+/* Live indicator */
 .doom-live-row {
   display: flex;
   align-items: center;
@@ -632,6 +682,8 @@ img, svg              { display: block; }
   text-transform: uppercase;
   color: #EF4444;
 }
+
+/* Big time */
 .doom-time {
   font-family: var(--font-display);
   font-size: 72px;
@@ -645,8 +697,49 @@ img, svg              { display: block; }
   font-size: 15px;
   color: rgba(239, 68, 68, 0.6);
   text-align: center;
-  min-height: 24px;
 }
+
+/* Opportunity cost card */
+.doom-opportunity {
+  width: 100%;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.doom-opportunity.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.doom-opportunity-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(239,68,68,0.45);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.doom-opportunity-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.18);
+  border-radius: 14px;
+  padding: 16px;
+}
+.doom-opportunity-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.doom-opportunity-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.4;
+}
+
+/* Controls */
 .doom-controls {
   display: flex;
   flex-direction: column;
