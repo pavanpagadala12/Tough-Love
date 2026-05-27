@@ -236,9 +236,8 @@ function AddGoalSheet({ userId, consents, onSaved, onClose }) {
                 <button
                   className="letter-prompts-trigger"
                   onClick={async () => {
-                    if (!title.trim()) return
                     setPromptsLoading(true)
-                    const prompts = await getLetterPrompts(title.trim())
+                    const prompts = await getLetterPrompts(title.trim() || 'my goal')
                     setLetterPrompts(prompts)
                     setPromptsLoading(false)
                   }}

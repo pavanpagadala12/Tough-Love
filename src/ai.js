@@ -59,6 +59,12 @@ Be direct. No sugarcoating, no piling on.`
   )
 }
 
+const FALLBACK_PROMPTS = [
+  'Why does this goal actually matter to me right now?',
+  'What will I be able to do or feel once I\'ve built this habit?',
+  'What would I tell myself if I almost gave up halfway through?',
+]
+
 // Letter prompts — called when "Letter to Future You" is toggled on
 export async function getLetterPrompts(goalTitle) {
   const text = await callGemini(
@@ -68,6 +74,7 @@ Help them explore their deeper motivation and what success would truly mean to t
 Return only the 3 questions, one per line. No numbering. No bullets. No quotes. Just the questions.`,
     120
   )
-  if (!text) return []
-  return text.split('\n').map(l => l.trim()).filter(Boolean).slice(0, 3)
+  if (!text) return FALLBACK_PROMPTS
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean).slice(0, 3)
+  return lines.length >= 2 ? lines : FALLBACK_PROMPTS
 }
