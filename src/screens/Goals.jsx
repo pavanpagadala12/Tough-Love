@@ -300,14 +300,15 @@ function DueDateChip({ dueAt }) {
 function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDelete }) {
   const [busy,       setBusy]       = useState(false)
   const [confirming, setConfirming] = useState(false)
+  // Optimistic state — set immediately on button press so UI feels instant.
+  // DB-sourced state (from history prop) always wins when available.
+  const [optimisticState, setOptimisticState] = useState(null)
 
   const todayKey = new Date().toISOString().slice(0, 10)
-  const todayOutcome = history?.[todayKey] ?? null
-  const [todayState, setTodayState] = useState(() => {
-    if (todayOutcome === 'completed') return 'done'
-    if (todayOutcome === 'failed')    return 'failed'
-    return null
-  })
+  const dbOutcome = history?.[todayKey] ?? null
+  const todayState = dbOutcome === 'completed' ? 'done'
+                   : dbOutcome === 'failed'    ? 'failed'
+                   : optimisticState
 
   const stakeInfo  = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
   const isActive   = goal.status === 'active'
@@ -316,15 +317,15 @@ function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDele
 
   async function handleComplete() {
     setBusy(true)
+    setOptimisticState('done')
     await onComplete(goal, streak)
-    setTodayState('done')
     setBusy(false)
   }
 
   async function handleFail() {
     setBusy(true)
+    setOptimisticState('failed')
     await onFail(goal, streak)
-    setTodayState('failed')
     setBusy(false)
   }
 
