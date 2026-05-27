@@ -1403,6 +1403,31 @@ img, svg              { display: block; }
   padding: 4px;
 }
 
+.goal-finish-btn {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-2);
+  text-align: center;
+  padding: 6px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+.goal-finish-btn:hover {
+  color: var(--text-1);
+  background: rgba(255,255,255,0.04);
+}
+
+.goal-confirm-archive {
+  margin-top: 4px;
+}
+.goal-confirm-text {
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 .goal-today-feedback {
   padding: 12px 14px;
   border-radius: var(--radius-sm);

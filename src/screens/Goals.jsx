@@ -237,9 +237,10 @@ function StreakBadge({ count }) {
 }
 
 // ── Goal card ────────────────────────────────────────────────────────
-function GoalCard({ goal, streak, onComplete, onFail, onDelete }) {
-  const [busy,       setBusy]       = useState(false)
-  const [todayState, setTodayState] = useState(null) // 'done' | 'failed' | null
+function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
+  const [busy,        setBusy]        = useState(false)
+  const [todayState,  setTodayState]  = useState(null) // 'done' | 'failed' | null
+  const [confirming,  setConfirming]  = useState(false)
 
   const stakeInfo = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
   const isActive  = goal.status === 'active'
@@ -255,6 +256,12 @@ function GoalCard({ goal, streak, onComplete, onFail, onDelete }) {
     setBusy(true)
     await onFail(goal, streak)
     setTodayState('failed')
+    setBusy(false)
+  }
+
+  async function handleArchive() {
+    setBusy(true)
+    await onArchive(goal.id)
     setBusy(false)
   }
 
@@ -275,14 +282,33 @@ function GoalCard({ goal, streak, onComplete, onFail, onDelete }) {
         )}
       </div>
 
-      {isActive && todayState === null && (
-        <div className="goal-card-actions">
-          <button className="goal-btn goal-btn-complete" onClick={handleComplete} disabled={busy}>
-            {busy ? '…' : '✓ Done today'}
+      {isActive && todayState === null && !confirming && (
+        <>
+          <div className="goal-card-actions">
+            <button className="goal-btn goal-btn-complete" onClick={handleComplete} disabled={busy}>
+              {busy ? '…' : '✓ Done today'}
+            </button>
+            <button className="goal-btn goal-btn-fail" onClick={handleFail} disabled={busy}>
+              {busy ? '…' : '✗ Failed'}
+            </button>
+          </div>
+          <button className="goal-finish-btn" onClick={() => setConfirming(true)}>
+            Finished this goal for good?
           </button>
-          <button className="goal-btn goal-btn-fail" onClick={handleFail} disabled={busy}>
-            {busy ? '…' : '✗ Failed'}
-          </button>
+        </>
+      )}
+
+      {isActive && todayState === null && confirming && (
+        <div className="goal-confirm-archive">
+          <p className="goal-confirm-text">Mark as permanently complete?</p>
+          <div className="goal-card-actions">
+            <button className="goal-btn goal-btn-complete" onClick={handleArchive} disabled={busy}>
+              {busy ? '…' : 'Yes, I\'m done'}
+            </button>
+            <button className="goal-btn goal-btn-fail" onClick={() => setConfirming(false)} disabled={busy}>
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
@@ -491,6 +517,11 @@ export default function Goals() {
     }
   }
 
+  async function handleArchive(goalId) {
+    await supabase.from('goals').update({ status: 'completed' }).eq('id', goalId)
+    setGoals(gs => gs.map(g => g.id === goalId ? { ...g, status: 'completed' } : g))
+  }
+
   async function handleDelete(goalId) {
     await supabase.from('goals').delete().eq('id', goalId)
     setGoals(gs => gs.filter(g => g.id !== goalId))
@@ -544,6 +575,7 @@ export default function Goals() {
                 streak={streaks[goal.id]}
                 onComplete={handleComplete}
                 onFail={handleFail}
+                onArchive={handleArchive}
                 onDelete={handleDelete}
               />
             ))}
