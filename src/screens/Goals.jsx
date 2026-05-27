@@ -299,8 +299,15 @@ function DueDateChip({ dueAt }) {
 
 function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDelete }) {
   const [busy,       setBusy]       = useState(false)
-  const [todayState, setTodayState] = useState(null)
   const [confirming, setConfirming] = useState(false)
+
+  const todayKey = new Date().toISOString().slice(0, 10)
+  const todayOutcome = history?.[todayKey] ?? null
+  const [todayState, setTodayState] = useState(() => {
+    if (todayOutcome === 'completed') return 'done'
+    if (todayOutcome === 'failed')    return 'failed'
+    return null
+  })
 
   const stakeInfo  = STAKE_LEVELS.find(s => s.id === goal.stake_level) ?? STAKE_LEVELS[2]
   const isActive   = goal.status === 'active'
