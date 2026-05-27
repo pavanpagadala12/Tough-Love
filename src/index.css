@@ -1787,6 +1787,25 @@ img, svg              { display: block; }
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
+/* ── Streak calendar ──────────────────────────────────────────────── */
+.streak-cal {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.streak-cal-dot {
+  flex: 1;
+  min-width: 0;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+}
+.sc-completed { background: #10B981; }
+.sc-failed    { background: rgba(239,68,68,0.45); }
+.sc-insurance { background: #F59E0B; }
+
 .goal-today-failed {
   background: rgba(239, 68, 68, 0.08);
   color: var(--danger);

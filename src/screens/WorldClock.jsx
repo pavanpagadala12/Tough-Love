@@ -4,28 +4,39 @@ import { getLocalTime, getLocalHour, getLocalDay, getAvailability, getUserTimezo
 
 const STORAGE_KEY = 'tl_world_clock_locations'
 
-const CITY_OPTIONS = [
-  { label: 'New York',     timezone: 'America/New_York' },
-  { label: 'Los Angeles',  timezone: 'America/Los_Angeles' },
-  { label: 'Chicago',      timezone: 'America/Chicago' },
-  { label: 'Toronto',      timezone: 'America/Toronto' },
-  { label: 'São Paulo',    timezone: 'America/Sao_Paulo' },
-  { label: 'Mexico City',  timezone: 'America/Mexico_City' },
-  { label: 'London',       timezone: 'Europe/London' },
-  { label: 'Paris',        timezone: 'Europe/Paris' },
-  { label: 'Berlin',       timezone: 'Europe/Berlin' },
-  { label: 'Dubai',        timezone: 'Asia/Dubai' },
-  { label: 'Mumbai',       timezone: 'Asia/Kolkata' },
-  { label: 'Bangkok',      timezone: 'Asia/Bangkok' },
-  { label: 'Singapore',    timezone: 'Asia/Singapore' },
-  { label: 'Hong Kong',    timezone: 'Asia/Hong_Kong' },
-  { label: 'Beijing',      timezone: 'Asia/Shanghai' },
-  { label: 'Seoul',        timezone: 'Asia/Seoul' },
-  { label: 'Tokyo',        timezone: 'Asia/Tokyo' },
-  { label: 'Sydney',       timezone: 'Australia/Sydney' },
-  { label: 'Cairo',        timezone: 'Africa/Cairo' },
-  { label: 'Johannesburg', timezone: 'Africa/Johannesburg' },
-]
+// Build full timezone list from the browser's Intl API, fall back to a
+// curated set on older environments that don't support supportedValuesOf.
+const ALL_TIMEZONES = (() => {
+  try {
+    return Intl.supportedValuesOf('timeZone').map(tz => ({
+      timezone: tz,
+      label: tz.split('/').pop().replace(/_/g, ' '),
+    }))
+  } catch {
+    return [
+      { label: 'New York',     timezone: 'America/New_York' },
+      { label: 'Los Angeles',  timezone: 'America/Los_Angeles' },
+      { label: 'Chicago',      timezone: 'America/Chicago' },
+      { label: 'Toronto',      timezone: 'America/Toronto' },
+      { label: 'São Paulo',    timezone: 'America/Sao_Paulo' },
+      { label: 'Mexico City',  timezone: 'America/Mexico_City' },
+      { label: 'London',       timezone: 'Europe/London' },
+      { label: 'Paris',        timezone: 'Europe/Paris' },
+      { label: 'Berlin',       timezone: 'Europe/Berlin' },
+      { label: 'Dubai',        timezone: 'Asia/Dubai' },
+      { label: 'Mumbai',       timezone: 'Asia/Kolkata' },
+      { label: 'Bangkok',      timezone: 'Asia/Bangkok' },
+      { label: 'Singapore',    timezone: 'Asia/Singapore' },
+      { label: 'Hong Kong',    timezone: 'Asia/Hong_Kong' },
+      { label: 'Beijing',      timezone: 'Asia/Shanghai' },
+      { label: 'Seoul',        timezone: 'Asia/Seoul' },
+      { label: 'Tokyo',        timezone: 'Asia/Tokyo' },
+      { label: 'Sydney',       timezone: 'Australia/Sydney' },
+      { label: 'Cairo',        timezone: 'Africa/Cairo' },
+      { label: 'Johannesburg', timezone: 'Africa/Johannesburg' },
+    ]
+  }
+})()
 
 const AVAIL_COLORS = {
   work:  '#10B981',
@@ -146,12 +157,15 @@ export default function WorldClock() {
   const homeLocation = { label: homeZone.split('/').pop().replace(/_/g, ' '), timezone: homeZone }
   const allLocations = [homeLocation, ...saved]
 
-  const filteredCities = CITY_OPTIONS.filter(c =>
-    c.timezone !== homeZone &&
-    !saved.some(s => s.timezone === c.timezone) &&
-    (c.label.toLowerCase().includes(search.toLowerCase()) ||
-     c.timezone.toLowerCase().includes(search.toLowerCase()))
-  )
+  const q = search.toLowerCase()
+  const filteredCities = search.length === 0
+    ? []
+    : ALL_TIMEZONES.filter(c =>
+        c.timezone !== homeZone &&
+        !saved.some(s => s.timezone === c.timezone) &&
+        (c.label.toLowerCase().includes(q) ||
+         c.timezone.toLowerCase().includes(q))
+      ).slice(0, 50)
 
   return (
     <div className="wc-screen">
@@ -210,7 +224,10 @@ export default function WorldClock() {
                   <span className="sheet-city-tz">{getLocalTime(now, city.timezone)}</span>
                 </button>
               ))}
-              {filteredCities.length === 0 && (
+              {search.length === 0 && (
+                <p className="text-sm text-2" style={{ padding: '12px 0' }}>Type to search all timezones…</p>
+              )}
+              {search.length > 0 && filteredCities.length === 0 && (
                 <p className="text-sm text-2" style={{ padding: '12px 0' }}>No results</p>
               )}
             </div>

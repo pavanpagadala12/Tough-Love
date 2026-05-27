@@ -297,7 +297,7 @@ function DueDateChip({ dueAt }) {
   )
 }
 
-function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
+function GoalCard({ goal, streak, history, onComplete, onFail, onArchive, onDelete }) {
   const [busy,       setBusy]       = useState(false)
   const [todayState, setTodayState] = useState(null)
   const [confirming, setConfirming] = useState(false)
@@ -344,6 +344,8 @@ function GoalCard({ goal, streak, onComplete, onFail, onArchive, onDelete }) {
           </div>
         )}
       </div>
+
+      {isActive && isDaily && <StreakCalendar history={history} />}
 
       {/* ── Daily goal actions ─────────────────────────── */}
       {isActive && isDaily && todayState === null && !confirming && (
@@ -437,19 +439,37 @@ function LetterReveal({ content, goalTitle, onDismiss }) {
   )
 }
 
+// ── Streak calendar (14-day dot row) ─────────────────────────────────
+function StreakCalendar({ history }) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (13 - i))
+    const key = d.toISOString().slice(0, 10)
+    return { key, outcome: history?.[key] ?? null }
+  })
+  return (
+    <div className="streak-cal">
+      {days.map(({ key, outcome }) => (
+        <div key={key} className={`streak-cal-dot${outcome ? ` sc-${outcome}` : ''}`} title={key} />
+      ))}
+    </div>
+  )
+}
+
 // ── Main ─────────────────────────────────────────────────────────────
 export default function Goals() {
-  const [userId,       setUserId]       = useState(null)
-  const [consents,     setConsents]     = useState({ letter: false, reality_check: false, witness: false })
-  const [goals,        setGoals]        = useState([])
-  const [streaks,      setStreaks]      = useState({})
-  const [loading,      setLoading]      = useState(true)
-  const [showAdd,      setShowAdd]      = useState(false)
-  const [careGoal,     setCareGoal]     = useState(null)
-  const [letterReveal, setLetterReveal] = useState(null)  // { content, goalTitle }
-  const [realityGoal,  setRealityGoal]  = useState(null)  // goal that failed (for Reality Check)
-  const [timeBankMin,  setTimeBankMin]  = useState(0)
-  const [insuranceStreak, setInsuranceStreak] = useState(null)  // streak count when insurance fires
+  const [userId,          setUserId]          = useState(null)
+  const [consents,        setConsents]        = useState({ letter: false, reality_check: false, witness: false })
+  const [goals,           setGoals]           = useState([])
+  const [streaks,         setStreaks]         = useState({})
+  const [sessionHistory,  setSessionHistory]  = useState({})
+  const [loading,         setLoading]         = useState(true)
+  const [showAdd,         setShowAdd]         = useState(false)
+  const [careGoal,        setCareGoal]        = useState(null)
+  const [letterReveal,    setLetterReveal]    = useState(null)
+  const [realityGoal,     setRealityGoal]     = useState(null)
+  const [timeBankMin,     setTimeBankMin]     = useState(0)
+  const [insuranceStreak, setInsuranceStreak] = useState(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -472,10 +492,13 @@ export default function Goals() {
 
   const loadData = useCallback(async (uid) => {
     if (!uid) return
-    const [goalsRes, streaksRes, tbRes] = await Promise.all([
+    const since14 = new Date(Date.now() - 14 * 86400000).toISOString()
+    const [goalsRes, streaksRes, tbRes, sessionsRes] = await Promise.all([
       supabase.from('goals').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       supabase.from('streaks').select('*').eq('user_id', uid),
       supabase.from('time_bank_entries').select('minutes').eq('user_id', uid),
+      supabase.from('goal_sessions').select('goal_id,outcome,created_at,streak_insurance_used')
+        .eq('user_id', uid).gte('created_at', since14),
     ])
     if (goalsRes.data)  setGoals(goalsRes.data)
     if (streaksRes.data) {
@@ -486,6 +509,15 @@ export default function Goals() {
     if (tbRes.data) {
       const total = tbRes.data.reduce((sum, e) => sum + (e.minutes ?? 0), 0)
       setTimeBankMin(Math.max(0, total))
+    }
+    if (sessionsRes.data) {
+      const hist = {}
+      sessionsRes.data.forEach(s => {
+        const date = s.created_at.slice(0, 10)
+        if (!hist[s.goal_id]) hist[s.goal_id] = {}
+        hist[s.goal_id][date] = s.streak_insurance_used ? 'insurance' : s.outcome
+      })
+      setSessionHistory(hist)
     }
     setLoading(false)
   }, [])
@@ -695,6 +727,7 @@ export default function Goals() {
                 key={goal.id}
                 goal={goal}
                 streak={streaks[goal.id]}
+                history={sessionHistory[goal.id] ?? {}}
                 onComplete={handleComplete}
                 onFail={handleFail}
                 onArchive={handleArchive}
