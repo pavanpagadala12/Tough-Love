@@ -1,4 +1,4 @@
-const MODEL = 'gemini-2.0-flash'
+const MODEL = 'gemini-1.5-flash'
 const BASE  = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 
 const SYSTEM = `You are the Tough Love goal coach — honest, warm, and direct.
